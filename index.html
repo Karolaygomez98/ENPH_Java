@@ -4,139 +4,978 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DANE - ENPH Cuadernillo 2</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos para la pantalla de inicio de sesión */
+        .login-card-wrapper {
+            width: 720px;
+            max-width: 90%;
+            margin: 4rem auto;
+            background-color: #e6e6e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-body-wrapper {
+            display: flex;
+            min-height: 380px;
+        }
+
+        .login-logo {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            background-color: #ffffff;
+            border-radius: 50%;
+            padding: 4px;
+            margin: 0 auto 24px auto;
+            display: block;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Panel Izquierdo Vino Tinto */
+        .login-panel-left {
+            background-color: #5c1822;
+            color: #ffffff;
+            width: 42%;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-panel-left h1 {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .login-panel-left h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #ffffff;
+        }
+
+        .login-panel-left p {
+            font-size: 15px;
+            color: #e0e0e0;
+        }
+
+        /* Panel Derecho Formulario */
+        .login-panel-right {
+            background-color: #e6e6e6;
+            width: 58%;
+            padding: 40px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-panel-right h3 {
+            color: #5c1822;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .login-field-group {
+            margin-bottom: 20px;
+        }
+
+        .login-field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #555555;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+
+        .login-field-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #a6a6a6;
+            border-radius: 4px;
+            background-color: #f2f2f2;
+            font-size: 14px;
+            color: #333333;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .login-field-group input::placeholder {
+            color: #8c8c8c;
+        }
+
+        .login-field-group input:focus {
+            border-color: #1e5235;
+            background-color: #ffffff;
+        }
+
+        .btn-login-submit {
+            background-color: #1e5235;
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            align-self: flex-start;
+            margin-top: 10px;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-login-submit:hover {
+            background-color: #163d27;
+        }
+
+        /* Franja verde inferior */
+        .login-bottom-bar {
+            height: 25px;
+            background-color: #1e5235;
+            width: 100%;
+        }
+
+        /* Estilos para la lista visual de hogares - UNA SOLA COLUMNA */
+        #lista-hogares {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            grid-auto-flow: row !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            gap: 12px !important;
+            margin-top: 15px !important;
+            box-sizing: border-box !important;
+        }
+
+        #lista-hogares .hogar-item-card {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            grid-column: 1 / -1 !important;
+            flex: none !important;
+        }
+
+        .hogar-item-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #5c1822;
+            border-radius: 6px;
+            padding: 14px 18px;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .hogar-item-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-left-color: #1e5235;
+        }
+
+        .hogar-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hogar-item-code {
+            font-weight: bold;
+            color: #5c1822;
+            font-size: 1rem;
+        }
+
+        .hogar-item-jefe {
+            font-size: 0.95rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .hogar-item-dir {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .hogar-item-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-proceso { background-color: #fff3cd; color: #856404; }
+        .status-completado { background-color: #d4edda; color: #155724; }
+        .status-pendiente { background-color: #f8d7da; color: #721c24; }
+    </style>
 </head>
 <body>
 
-    <!-- Encabezado Principal DANE - Vino Tinto -->
-    <header class="main-header">
-        <div class="header-brand">
-            <span class="logo-badge">EN</span>
-            <div>
-                <p class="sub-title">DANE · ENPH</p>
-                <h2>Gestión de hogares · Cuadernillo 2</h2>
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-container">
+        <div class="login-card-wrapper">
+            <div class="login-body-wrapper">
+                <!-- Panel Izquierdo (Vino Tinto) -->
+                <div class="login-panel-left">
+                    <img src="img/logo-udi-dane.png" alt="Emblema UDI · DANE de Vivienda y Análisis" class="login-logo">
+                    <h1>DANE • ENPH</h1>
+                    <h2>Gestión de hogares</h2>
+                    <p>Cuadernillo 2</p>
+                </div>
+
+                <!-- Panel Derecho (Formulario de Login) -->
+                <div class="login-panel-right">
+                    <h3>Iniciar Sesión</h3>
+                    
+                    <form id="login-form">
+                        <div class="login-field-group">
+                            <label for="username">Usuario:</label>
+                            <input type="text" id="username" value="kdgomez" placeholder="Ingrese su usuario" required>
+                        </div>
+                        <div class="login-field-group">
+                            <label for="password">Contraseña:</label>
+                            <input type="password" id="password" value="123456" placeholder="Ingrese su contraseña" required>
+                        </div>
+                        <button type="submit" class="btn-login-submit">Ingresar</button>
+                    </form>
+                </div>
             </div>
+
+            <!-- Franja Verde Inferior -->
+            <div class="login-bottom-bar"></div>
         </div>
-        <div class="user-status">
-            <span class="badge-connected">● Sistema conectado</span>
-            <div class="user-info">
-                <span class="avatar-badge">KG</span>
-                <strong>Karolay Daniela Gómez</strong>
-            </div>
-        </div>
-    </header>
+    </div>
 
-    <!-- Barra de Navegación Superior - Verde DANE -->
-    <nav class="top-nav">
-        <a href="#inicio" class="nav-link active">🏠 Inicio</a>
-        <a href="#identificacion" class="nav-link"><span class="badge-letter">A</span> Identificación</a>
-        <a href="#control-visitas" class="nav-link"><span class="badge-letter">B</span> Control de visitas</a>
-        <a href="#gasto-alimentos" class="nav-link"><span class="badge-letter">C</span> Gasto en alimentos</a>
-        <a href="#gastos-diarios" class="nav-link"><span class="badge-letter">D</span> Gastos diarios</a>
-        <a href="#comidas-fuera" class="nav-link"><span class="badge-letter">D1</span> Comidas fuera</a>
-        <a href="#consultas" class="nav-link">🔍 Consultas</a>
-    </nav>
+    <!-- CONTENEDOR PRINCIPAL DEL APLICATIVO -->
+    <div id="app-layout" style="display: none;">
 
-    <!-- Contenedor Principal de Secciones -->
-    <main class="main-container">
-
-        <!-- Pestaña 1: Inicio / Dashboard -->
-        <section id="inicio" class="tab-content active">
-            <div class="dashboard-welcome">
+        <!-- Encabezado Principal DANE -->
+        <header class="main-header">
+            <div class="header-brand">
+                <span class="logo-badge">EN</span>
                 <div>
-                    <h1>Buenos días, Karolay 👋</h1>
-                    <p>Consulta y gestiona los hogares que tienes asignados.</p>
-                </div>
-                <span class="badge-tag">• Jornada activa · Octubre 2026</span>
-            </div>
-
-            <!-- Métricas -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <p>🏠 Hogares asignados</p>
-                    <h3>8</h3>
-                </div>
-                <div class="metric-card">
-                    <p>✅ Hogares completados</p>
-                    <h3>2</h3>
-                </div>
-                <div class="metric-card">
-                    <p>🌓 En proceso</p>
-                    <h3>4</h3>
-                </div>
-                <div class="metric-card">
-                    <p>⚠️️ Pendientes</p>
-                    <h3>2</h3>
+                    <p class="sub-title">DANE · ENPH</p>
+                    2<h2>Gestión de hogares · Cuadernillo 2</h2>
                 </div>
             </div>
-
-            <!-- Panel de Búsqueda -->
-            <div class="card-panel">
-                <h3>Hogares asignados</h3>
-                <p>Selecciona un hogar para iniciar o continuar el diligenciamiento.</p>
+            <div class="user-status">
+                <span class="badge-connected">● Sistema conectado</span>
+                <div class="user-info" id="btn-user-profile" style="cursor: pointer;" title="Haz clic para cerrar sesión">
+                    <span class="avatar-badge">KG</span>
+                    <strong id="display-user-name">Karolay Daniela Gómez</strong>
+                </div>
             </div>
-        </section>
+        </header>
 
-        <!-- Pestaña: A - Identificación -->
-        <section id="identificacion" class="tab-content">
-            <div class="card-panel">
-                <h2>Sección A: Identificación del Hogar</h2>
-                <br>
-                <div class="form-group">
-                    <label>Código del Hogar:</label>
-                    <input type="text" class="form-control" value="HOG-68001-014" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Nombre del Jefe de Hogar:</label>
-                    <input type="text" class="form-control" value="María Gómez">
-                </div>
-                <div class="form-group">
-                    <label>Dirección:</label>
-                    <input type="text" class="form-control" value="Calle 12 # 34-56 · Cabecera">
-                </div>
-                <button class="btn-primary">Guardar Cambios</button>
-            </div>
-        </section>
+        <!-- Barra de Navegación Superior -->
+        <nav class="top-nav">
+            <a href="#inicio" class="nav-link active" data-tab="inicio">🏠 Inicio</a>
+            <a href="#identificacion" class="nav-link" data-tab="identificacion"><span class="badge-letter">A</span> Identificación</a>
+            <a href="#control-visitas" class="nav-link" data-tab="control-visitas"><span class="badge-letter">B</span> Control de visitas</a>
+            <a href="#gasto-alimentos" class="nav-link" data-tab="gasto-alimentos"><span class="badge-letter">C</span> Gasto en alimentos</a>
+            <a href="#gastos-diarios" class="nav-link" data-tab="gastos-diarios"><span class="badge-letter">D</span> Gastos diarios</a>
+            <a href="#comidas-fuera" class="nav-link" data-tab="comidas-fuera"><span class="badge-letter">D1</span> Comidas fuera</a>
+            <a href="#consultas" class="nav-link" data-tab="consultas">🔍 Consultas</a>
+        </nav>
 
-        <!-- Pestaña: D - Gastos Diarios -->
-        <section id="gastos-diarios" class="tab-content">
-            <div class="card-panel">
-                <h2>Sección D: Cuadernillo 2 - Gastos Diarios</h2>
-                <p>Registro diario de bienes y servicios comprados por el hogar.</p>
-                <br>
-                <form id="form-gasto">
-                    <div class="form-group">
-                        <label>Descripción del Producto:</label>
-                        <input type="text" class="form-control" placeholder="Ej: Arroz blanco 1Kg">
+        <!-- Contenedor Principal de Secciones -->
+        <main class="main-container">
+
+            <!-- PESTAÑA 1: INICIO / DASHBOARD -->
+            <section id="inicio" class="tab-content active">
+                <div class="dashboard-welcome">
+                    <div>
+                        <h1 id="welcome-message">Buenos días, Karolay 👋</h1>
+                        <p>Consulta y gestiona directamente los hogares asignados para la Encuesta Nacional de Presupuestos Hogares (ENPH).</p>
                     </div>
-                    <div class="form-group">
-                        <label>Cantidad:</label>
-                        <input type="number" class="form-control" placeholder="1.0">
-                    </div>
-                    <div class="form-group">
-                        <label>Valor Pagado ($):</label>
-                        <input type="number" class="form-control" placeholder="4200">
-                    </div>
-                    <button type="submit" class="btn-primary">Guardar Gasto en Java / BD</button>
-                </form>
-            </div>
-        </section>
+                    <span class="badge-tag">• Jornada activa · Octubre 2026</span>
+                </div>
 
-        <!-- Otras Secciones Genericas -->
-        <section id="control-visitas" class="tab-content">
-            <div class="card-panel"><h2>Sección B: Control de Visitas</h2><p>Módulo en desarrollo.</p></div>
-        </section>
-        <section id="gasto-alimentos" class="tab-content">
-            <div class="card-panel"><h2>Sección C: Gasto en Alimentos</h2><p>Módulo en desarrollo.</p></div>
-        </section>
-        <section id="comidas-fuera" class="tab-content">
-            <div class="card-panel"><h2>Sección D1: Comidas Fuera del Hogar</h2><p>Módulo en desarrollo.</p></div>
-        </section>
-        <section id="consultas" class="tab-content">
-            <div class="card-panel"><h2>Consultas y Reportes</h2><p>Módulo en desarrollo.</p></div>
-        </section>
+                <!-- Tarjetas de Métricas -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <p>🏠 Hogares asignados</p>
+                        <h3 id="metric-total">8</h3>
+                    </div>
+                    <div class="metric-card">
+                        <p>✅ Completados</p>
+                        <h3 id="metric-completados">2</h3>
+                    </div>
+                    <div class="metric-card">
+                        <p>🌓 En proceso</p>
+                        <h3 id="metric-proceso">4</h3>
+                    </div>
+                    <div class="metric-card">
+                        <p>⚠ Pendientes</p>
+                        <h3 id="metric-pendientes">2</h3>
+                    </div>
+                </div>
 
-    </main>
+                <!-- Lista Directa de Hogares Asignados -->
+                <div class="card-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="margin: 0; color: #5c1822;">Directorio de Hogares Asignados</h3>
+                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Acceda directamente a cada hogar sin pasos adicionales de selección.</p>
+                        </div>
+                        <button id="btn-nuevo-hogar" class="btn-primary" style="width: auto; padding: 0.6rem 1.2rem; background-color: #1e5235;">+ Registrar Nuevo Hogar</button>
+                    </div>
+
+                    <!-- Buscador y Filtros -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap;">
+                        <input type="text" id="buscar-hogar" class="form-control" placeholder="Buscar por Código, Jefe de Hogar o Dirección..." style="flex: 2;">
+                        <select id="filtro-estado" class="form-control" style="flex: 1;">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente">Pendientes</option>
+                            <option value="en_proceso">En proceso</option>
+                            <option value="completado">Completados</option>
+                        </select>
+                        <button type="button" id="btn-buscar" class="btn-primary" style="width: auto; padding: 0.6rem 1.2rem;">Buscar</button>
+                    </div>
+
+                    <!-- Lista de Hogares desplegada directamente -->
+                    <div class="hogares-list-container" id="lista-hogares" style="display: grid !important; grid-template-columns: 1fr !important; grid-auto-flow: row !important; width: 100% !important;">
+                        
+                        <!-- Hogar 1 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-014</span>
+                                <span class="hogar-item-jefe">María Gómez</span>
+                                <span class="hogar-item-dir">📍 Calle 12 # 34-56 · Cabecera | 🕒 Visitas realizadas: 2</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-proceso">En Proceso</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-014" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 2 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-015</span>
+                                <span class="hogar-item-jefe">Carlos Rodríguez</span>
+                                <span class="hogar-item-dir">📍 Carrera 27 # 45-12 · Centro | 🕒 Visitas realizadas: 3</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-completado">Completado</span>
+                                <button class="btn-primary btn-ver" data-hogar="HOG-68001-015" style="padding: 0.5rem 1rem; font-size: 0.85rem; background-color: #6c757d;">Ver Resumen</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 3 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-016</span>
+                                <span class="hogar-item-jefe">Ana Lucía Martínez</span>
+                                <span class="hogar-item-dir">📍 Calle 36 # 15-20 · San Francisco | 🕒 Visitas realizadas: 1</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-proceso">En Proceso</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-016" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 4 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-017</span>
+                                <span class="hogar-item-jefe">Jorge Eliecer Prado</span>
+                                <span class="hogar-item-dir">📍 Diagonal 15 # 56-08 · La Concordia | 🕒 Visitas realizadas: 0</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-pendiente">Pendiente</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-017" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 5 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-018</span>
+                                <span class="hogar-item-jefe">Esperanza Caicedo</span>
+                                <span class="hogar-item-dir">📍 Transversal 78 # 21-34 · Provenza | 🕒 Visitas realizadas: 4</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-completado">Completado</span>
+                                <button class="btn-primary btn-ver" data-hogar="HOG-68001-018" style="padding: 0.5rem 1rem; font-size: 0.85rem; background-color: #6c757d;">Ver Resumen</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 6 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-019</span>
+                                <span class="hogar-item-jefe">Pedro Antonio Suárez</span>
+                                <span class="hogar-item-dir">📍 Calle 105 # 24-11 · Cañaveral | 🕒 Visitas realizadas: 2</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-proceso">En Proceso</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-019" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 7 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-020</span>
+                                <span class="hogar-item-jefe">Claudia Patricia Reyes</span>
+                                <span class="hogar-item-dir">📍 Carrera 33 # 52-40 · Cabecera | 🕒 Visitas realizadas: 1</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-proceso">En Proceso</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-020" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                        <!-- Hogar 8 -->
+                        <div class="hogar-item-card">
+                            <div class="hogar-item-info">
+                                <span class="hogar-item-code">HOG-68001-021</span>
+                                <span class="hogar-item-jefe">Hernando Vargas</span>
+                                <span class="hogar-item-dir">📍 Calle 45 # 9-18 · Real de Minas | 🕒 Visitas realizadas: 0</span>
+                            </div>
+                            <div class="hogar-item-meta">
+                                <span class="status-pill status-pendiente">Pendiente</span>
+                                <button class="btn-primary btn-diligenciar" data-hogar="HOG-68001-021" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Diligenciar</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA A: IDENTIFICACIÓN -->
+            <section id="identificacion" class="tab-content" style="display:none;">
+                <div class="card-panel">
+                    <h2>Sección A: Ubicación e Identificación del Hogar</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Diligencie los datos geográficos, de control y la composición básica del hogar (Cuadernillo 2 DANE).</p>
+
+                    <form id="form-identificacion">
+                        <!-- 1. Ubicación Geográfica -->
+                        <h3 style="color: #5c1822; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3rem; margin-bottom: 1rem;">1. Ubicación Geográfica</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Departamento:</label>
+                                <input type="text" id="id-departamento" class="form-control" value="68 - Santander" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Municipio:</label>
+                                <input type="text" id="id-municipio" class="form-control" value="68001 - Bucaramanga" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Clase:</label>
+                                <select id="id-clase" class="form-control">
+                                    <option value="1">1 - Cabecera Municipal</option>
+                                    <option value="2">2 - Centro Poblado</option>
+                                    <option value="3">3 - Rural Disperso</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Centro Poblado / Comuna:</label>
+                                <input type="text" id="id-centro-poblado" class="form-control" placeholder="Ej: Comuna 12 - Cabecera">
+                            </div>
+                        </div>
+
+                        <!-- 2. Control DANE -->
+                        <h3 style="color: #5c1822; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3rem; margin-top: 1.5rem; margin-bottom: 1rem;">2. Muestreo y Datos de Control</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Código de Hogar:</label>
+                                <input type="text" id="id-codigo-hogar" class="form-control" value="HOG-68001-014" readonly style="font-weight: bold; background-color: #f8f9fa;">
+                            </div>
+                            <div class="form-group">
+                                <label>Conglomerado:</label>
+                                <input type="text" id="id-conglomerado" class="form-control" value="96321" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Zona / Sector:</label>
+                                <input type="text" id="id-sector" class="form-control" value="014">
+                            </div>
+                            <div class="form-group">
+                                <label>Sección / Manzana:</label>
+                                <input type="text" id="id-manzana" class="form-control" value="02">
+                            </div>
+                            <div class="form-group">
+                                <label>N° Vivienda:</label>
+                                <input type="number" id="id-num-vivienda" class="form-control" value="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>N° Hogar:</label>
+                                <input type="number" id="id-num-hogar" class="form-control" value="1" required>
+                            </div>
+                        </div>
+
+                        <!-- 3. Dirección y Responsables -->
+                        <h3 style="color: #5c1822; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3rem; margin-top: 1.5rem; margin-bottom: 1rem;">3. Dirección, Personal Encuestador y Datos del Hogar</h3>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Dirección de la Vivienda:</label>
+                                <input type="text" id="id-direccion" class="form-control" value="Calle 12 # 34-56 · Cabecera" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono de Contacto:</label>
+                                <input type="tel" id="id-telefono" class="form-control" value="3159876543">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Nombre Jefe(a) de Hogar:</label>
+                                <input type="text" id="id-jefe-hogar" class="form-control" value="María Gómez" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nombre Informante:</label>
+                                <input type="text" id="id-informante" class="form-control" value="María Gómez">
+                            </div>
+                            <div class="form-group">
+                                <label>Total Personas en Hogar:</label>
+                                <input type="number" id="id-total-personas" class="form-control" value="3" min="1" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label>Código Encuestador(a):</label>
+                                <input type="text" id="id-encuestador" class="form-control" value="KG-8521" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Código Supervisor(a):</label>
+                                <input type="text" id="id-supervisor" class="form-control" value="SUP-1002">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="button" class="btn-primary" style="background-color: #6c757d;">Restablecer</button>
+                            <button type="submit" class="btn-primary">Guardar Identificación</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- PESTAÑA B: CONTROL DE VISITAS -->
+            <section id="control-visitas" class="tab-content" style="display:none;">
+                <div class="card-panel">
+                    <h2>Sección B: Control de Visitas del Recolector</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Gestión y secuencia de visitas de campo realizadas a la vivienda.</p>
+                    
+                    <form id="form-visita" style="background: #fdfbf7; padding: 1.2rem; border-radius: 6px; border: 1px solid #e2d9cf; margin-bottom: 2rem;">
+                        <h3 style="margin-top: 0; color: #5c1822;">+ Registrar Nueva Visita</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>N° Visita:</label>
+                                <input type="number" id="visita-num" min="1" max="10" class="form-control" value="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha:</label>
+                                <input type="date" id="visita-fecha" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hora Inicio:</label>
+                                <input type="time" id="visita-inicio" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hora Fin:</label>
+                                <input type="time" id="visita-fin" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Resultado:</label>
+                                <select id="visita-resultado" class="form-control">
+                                    <option value="1">1 - Completa</option>
+                                    <option value="2">2 - Incompleta</option>
+                                    <option value="3">3 - Cita Concertada</option>
+                                    <option value="4">4 - Ausente</option>
+                                    <option value="5">5 - Rechazo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Observaciones de la Visita:</label>
+                            <input type="text" id="visita-obs" class="form-control" placeholder="Ej: Se atiende en la tarde, falta completar gastos del día 2...">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: auto;">Guardar Registro de Visita</button>
+                    </form>
+
+                    <h3>Historial de Visitas del Hogar Seleccionado</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background-color: #1e5235; color: white;">
+                                    <th style="padding: 0.6rem;">N°</th>
+                                    <th style="padding: 0.6rem;">Fecha</th>
+                                    <th style="padding: 0.6rem;">Horario</th>
+                                    <th style="padding: 0.6rem;">Resultado</th>
+                                    <th style="padding: 0.6rem;">Observaciones</th>
+                                    <th style="padding: 0.6rem; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-visitas-body">
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 0.6rem;">1</td>
+                                    <td style="padding: 0.6rem;">10/10/2026</td>
+                                    <td style="padding: 0.6rem;">09:00 - 10:15</td>
+                                    <td style="padding: 0.6rem;">Incompleta</td>
+                                    <td style="padding: 0.6rem;">Se entregó cuadernillo físico y explicaciones iniciales.</td>
+                                    <td style="padding: 0.6rem; text-align: center;">
+                                        <button class="btn-primary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background-color: #dc3545;">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA C: GASTO EN ALIMENTOS -->
+            <section id="gasto-alimentos" class="tab-content" style="display: none;">
+                <!-- Tarjeta del Hogar Activo -->
+                <div style="background-color: #5c1822; color: white; border-radius: 12px; padding: 1.2rem 1.8rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <div style="display: flex; align-items: center; gap: 1.2rem;">
+                        <div style="background: rgba(255,255,255,0.1); width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            🏠
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8;">
+                                HOGAR ACTIVO · <span id="c-codigo-hogar">HOG-68001-014</span>
+                            </div>
+                            <h3 id="c-nombre-jefe" style="margin: 0.2rem 0; font-size: 1.3rem; font-weight: 700;">María Gómez</h3>
+                            <p id="c-direccion-hogar" style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Calle 12 # 34-56 · Cabecera</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="text-align: right;">
+                            <span style="font-size: 0.75rem; opacity: 0.8; display: block; margin-bottom: 0.3rem;">Progreso</span>
+                            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                <div style="background: rgba(255,255,255,0.2); width: 140px; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="c-progreso-bar" style="background-color: #ff4d6d; width: 72%; height: 100%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <strong id="c-progreso-texto" style="font-size: 0.85rem;">72%</strong>
+                            </div>
+                        </div>
+                        <button type="button" id="btn-cambiar-hogar-c" style="background: white; color: #5c1822; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+                            Cambiar hogar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Título y Descripción -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="margin: 0; font-size: 1.6rem; color: #1a1a1a; font-weight: 800;">Características del gasto en alimentos</h2>
+                    <p style="margin: 0.3rem 0 0 0; color: #666; font-size: 0.9rem;">Capítulo C · RF07–RF09 · Información de consumo habitual.</p>
+                </div>
+
+                <!-- Panel de Formulario / Tabla de Grupos -->
+                <div style="background: white; border-radius: 12px; padding: 1.8rem; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                    <h3 style="margin: 0 0 0.3rem 0; font-size: 1.1rem; color: #222;">Grupos de alimentos</h3>
+                    <p style="margin: 0 0 1.5rem 0; color: #888; font-size: 0.85rem;">Ejemplo representativo de la estructura del formulario.</p>
+
+                    <form id="form-gasto-alimentos">
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 0 0.8rem; text-align: left;">
+                                <thead>
+                                    <tr style="color: #666; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <th style="padding: 0 0.8rem 0.5rem 0.8rem; width: 15%;">GRUPO</th>
+                                        <th style="padding: 0 0.8rem 0.5rem 0.8rem; width: 22%;">FRECUENCIA</th>
+                                        <th style="padding: 0 0.8rem 0.5rem 0.8rem; width: 22%;">ÚLTIMA COMPRA</th>
+                                        <th style="padding: 0 0.8rem 0.5rem 0.8rem; width: 22%;">¿COMPRARÁ NUEVAMENTE?</th>
+                                        <th style="padding: 0 0.8rem 0.5rem 0.8rem; width: 19%;">MERCADO TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 0.5rem 0.8rem; font-weight: 700; color: #222;">Arroz</td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="frecuencia_arroz" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="semanal" selected>Semanal</option>
+                                                <option value="quincenal">Quincenal</option>
+                                                <option value="mensual">Mensual</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="compra_arroz" value="$35.000" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="renovar_arroz" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="si" selected>Sí</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="mercado_arroz" placeholder="$" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.5rem 0.8rem; font-weight: 700; color: #222;">Carnes</td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="frecuencia_carnes" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="semanal">Semanal</option>
+                                                <option value="quincenal" selected>Quincenal</option>
+                                                <option value="mensual">Mensual</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="compra_carnes" value="$80.000" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="renovar_carnes" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="si" selected>Sí</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="mercado_carnes" placeholder="$" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.5rem 0.8rem; font-weight: 700; color: #222;">Frutas</td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="frecuencia_frutas" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="semanal" selected>Semanal</option>
+                                                <option value="quincenal">Quincenal</option>
+                                                <option value="mensual">Mensual</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="compra_frutas" value="$28.000" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="renovar_frutas" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="si" selected>Sí</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="mercado_frutas" placeholder="$" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.5rem 0.8rem; font-weight: 700; color: #222;">Otros</td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="frecuencia_otros" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="semanal">Semanal</option>
+                                                <option value="quincenal">Quincenal</option>
+                                                <option value="mensual" selected>Mensual</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="compra_otros" value="$60.000" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <select name="renovar_otros" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white;">
+                                                <option value="si">Sí</option>
+                                                <option value="no" selected>No</option>
+                                            </select>
+                                        </td>
+                                        <td style="padding: 0.5rem 0.8rem;">
+                                            <input type="text" name="mercado_otros" placeholder="$" style="width: 100%; padding: 0.65rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="submit" style="background-color: #5c1822; color: white; border: none; padding: 0.75rem 1.6rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                Guardar cambios
+                            </button>
+                            <button type="button" class="btn-siguiente" data-next="gastos-diarios" style="background-color: #f8f9fa; color: #333; border: 1px solid #e0e0e0; padding: 0.75rem 1.6rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                Continuar →
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- PESTAÑA D: GASTOS DIARIOS -->
+            <section id="gastos-diarios" class="tab-content" style="display:none;">
+                <div class="card-panel">
+                    <h2>Sección D: Cuadernillo 2 - Gastos Diarios Personales y del Hogar</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Registro de bienes y servicios comprados diariamente.</p>
+
+                    <form id="form-gasto">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Fecha del Gasto:</label>
+                                <input type="date" id="gasto-fecha" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Miembro que gastó:</label>
+                                <select id="gasto-persona" class="form-control">
+                                    <option value="1">1 - María Gómez (Jefe)</option>
+                                    <option value="2">2 - Carlos Gómez</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Descripción del Producto o Servicio:</label>
+                                <input type="text" id="gasto-producto" class="form-control" placeholder="Ej: Jabón de baño, Pasaje de bus" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Lugar de Compra:</label>
+                                <select id="gasto-lugar" class="form-control">
+                                    <option value="1">Tienda de barrio</option>
+                                    <option value="2">Supermercado</option>
+                                    <option value="3">Plaza de mercado</option>
+                                    <option value="4">Vendedor ambulante</option>
+                                    <option value="5">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad:</label>
+                                <input type="number" step="0.1" id="gasto-cantidad" class="form-control" placeholder="1.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Valor Pagado ($):</label>
+                                <input type="number" id="gasto-valor" class="form-control" placeholder="4200" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Guardar Gasto en BD</button>
+                    </form>
+
+                    <!-- Tabla de Registros de Gastos Diarios -->
+                    <div style="margin-top: 2rem; overflow-x: auto;">
+                        <h3 style="color: #5c1822;">Registros de Gastos Diarios</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background-color: #1e5235; color: white;">
+                                    <th style="padding: 0.6rem;">Fecha</th>
+                                    <th style="padding: 0.6rem;">Persona</th>
+                                    <th style="padding: 0.6rem;">Producto / Servicio</th>
+                                    <th style="padding: 0.6rem;">Lugar</th>
+                                    <th style="padding: 0.6rem;">Cantidad</th>
+                                    <th style="padding: 0.6rem;">Valor</th>
+                                    <th style="padding: 0.6rem; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-gastos-body">
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 0.6rem;">10/10/2026</td>
+                                    <td style="padding: 0.6rem;">María Gómez</td>
+                                    <td style="padding: 0.6rem;">Jabón de baño</td>
+                                    <td style="padding: 0.6rem;">Supermercado</td>
+                                    <td style="padding: 0.6rem;">2.0</td>
+                                    <td style="padding: 0.6rem;">$8.400</td>
+                                    <td style="padding: 0.6rem; text-align: center;">
+                                        <button class="btn-primary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background-color: #dc3545;">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA D1: COMIDAS FUERA DEL HOGAR -->
+            <section id="comidas-fuera" class="tab-content" style="display:none;">
+                <div class="card-panel">
+                    <h2>Sección D1: Comidas Preparadas Fuera del Hogar</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Registro de consumos de alimentos fuera de la vivienda por los miembros del hogar.</p>
+
+                    <form id="form-comidas-fuera">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>Fecha:</label>
+                                <input type="date" id="cf-fecha" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Miembro que consumió:</label>
+                                <select id="cf-persona" class="form-control">
+                                    <option value="1">1 - María Gómez (Jefe)</option>
+                                    <option value="2">2 - Carlos Gómez</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Comida:</label>
+                                <select id="cf-tipo" class="form-control">
+                                    <option value="1">Desayuno</option>
+                                    <option value="2">Almuerzo Ejecutivo / Corriente</option>
+                                    <option value="3">Cena / Comida</option>
+                                    <option value="4">Refrigerio / Empanadas / Café</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Lugar de Consumo:</label>
+                                <input type="text" id="cf-lugar" class="form-control" placeholder="Ej: Restaurante Don Pedro, Cafetería U">
+                            </div>
+                            <div class="form-group">
+                                <label>Valor Pagado ($):</label>
+                                <input type="number" id="cf-valor" class="form-control" placeholder="0" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Guardar Comida Fuera</button>
+                    </form>
+
+                    <!-- Tabla de Registros de Comidas Fuera -->
+                    <div style="margin-top: 2rem; overflow-x: auto;">
+                        <h3 style="color: #5c1822;">Registros de Comidas Fuera del Hogar</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background-color: #1e5235; color: white;">
+                                    <th style="padding: 0.6rem;">Fecha</th>
+                                    <th style="padding: 0.6rem;">Persona</th>
+                                    <th style="padding: 0.6rem;">Tipo de Comida</th>
+                                    <th style="padding: 0.6rem;">Lugar</th>
+                                    <th style="padding: 0.6rem;">Valor</th>
+                                    <th style="padding: 0.6rem; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-comidas-body">
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 0.6rem;">10/10/2026</td>
+                                    <td style="padding: 0.6rem;">María Gómez</td>
+                                    <td style="padding: 0.6rem;">Almuerzo Ejecutivo</td>
+                                    <td style="padding: 0.6rem;">Restaurante Don Pedro</td>
+                                    <td style="padding: 0.6rem;">$15.000</td>
+                                    <td style="padding: 0.6rem; text-align: center;">
+                                        <button class="btn-primary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background-color: #dc3545;">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA CONSULTAS -->
+            <section id="consultas" class="tab-content" style="display:none;">
+                <div class="card-panel">
+                    <h2>Consultas y Consolidado de Gastos</h2>
+                    <p style="color: #666; margin-bottom: 1.5rem;">Resumen de la captura del hogar seleccionado.</p>
+                    
+                    <div style="padding: 1.2rem; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 1.5rem;">
+                        <p style="margin: 0.3rem 0;"><strong>Hogar Activo:</strong> <span id="resumen-codigo-hogar">HOG-68001-014</span> (<span id="resumen-jefe-hogar">María Gómez</span>)</p>
+                        <p style="margin: 0.3rem 0;"><strong>Total acumulado en alimentos (Sección C):</strong> <span id="resumen-alimentos">$203.000</span></p>
+                        <p style="margin: 0.3rem 0;"><strong>Total acumulado en gastos diarios (Sección D):</strong> <span id="resumen-diarios">$8.400</span></p>
+                        <p style="margin: 0.3rem 0;"><strong>Total en comidas fuera (Sección D1):</strong> <span id="resumen-comidas">$15.000</span></p>
+                        <hr style="border: 0; border-top: 1px solid #ccc; margin: 0.8rem 0;">
+                        <p style="margin: 0.3rem 0; font-size: 1.1rem; color: #5c1822;"><strong>Total General Consolidado:</strong> <span id="resumen-total">$226.400</span></p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn-primary" style="background-color: #1e5235;">📥 Exportar Reporte Excel</button>
+                        <button type="button" class="btn-primary" style="background-color: #6c757d;">📄 Generar PDF Consolidado</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <script src="js/app.js"></script>
 </body>
