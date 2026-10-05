@@ -3,81 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENPH - Cuadernillo 2 (Encuestador)</title>
+    <title>DANE - ENPH Cuadernillo 2</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>DANE - Encuesta Nacional de Presupuestos Hogares (ENPH)</h1>
-        <h2>Cuadernillo 2: Gastos Diarios</h2>
-        
-        <div class="user-selector">
-            <label for="role">Rol de trabajo:</label>
-            <select id="role">
-                <option value="encuestador" selected>Encuestador</option>
-                <option value="supervisor">Supervisor</option>
-                <option value="critico">Crítico / Digitador</option>
-            </select>
+
+    <!-- Encabezado Principal DANE - Vino Tinto -->
+    <header class="main-header">
+        <div class="header-brand">
+            <span class="logo-badge">EN</span>
+            <div>
+                <p class="sub-title">DANE · ENPH</p>
+                <h2>Gestión de hogares · Cuadernillo 2</h2>
+            </div>
+        </div>
+        <div class="user-status">
+            <span class="badge-connected">● Sistema conectado</span>
+            <div class="user-info">
+                <span class="avatar-badge">KG</span>
+                <strong>Karolay Daniela Gómez</strong>
+            </div>
         </div>
     </header>
 
-    <main id="app-container">
-        <!-- Formulario del Encuestador -->
-        <section id="modulo-encuestador">
-            <h3>Registro de Alimentos y Bebidas</h3>
-            
-            <form id="form-gastos">
-                <!-- Selección de Producto de la Canasta -->
-                <div class="form-group">
-                    <label for="producto-select">Producto:</label>
-                    <select id="producto-select" required>
-                        <option value="">-- Seleccione un producto --</option>
-                        <option value="arroz">Arroz</option>
-                        <option value="leche">Leche entera</option>
-                        <option value="huevos">Huevos</option>
-                        <option value="pan">Pan aliñado / corriente</option>
-                        <option value="aceite">Aceite vegetal</option>
-                        <option value="otro">Otro (Especificar)</option>
-                    </select>
+    <!-- Barra de Navegación Superior - Verde DANE -->
+    <nav class="top-nav">
+        <a href="#inicio" class="nav-link active">🏠 Inicio</a>
+        <a href="#identificacion" class="nav-link"><span class="badge-letter">A</span> Identificación</a>
+        <a href="#control-visitas" class="nav-link"><span class="badge-letter">B</span> Control de visitas</a>
+        <a href="#gasto-alimentos" class="nav-link"><span class="badge-letter">C</span> Gasto en alimentos</a>
+        <a href="#gastos-diarios" class="nav-link"><span class="badge-letter">D</span> Gastos diarios</a>
+        <a href="#comidas-fuera" class="nav-link"><span class="badge-letter">D1</span> Comidas fuera</a>
+        <a href="#consultas" class="nav-link">🔍 Consultas</a>
+    </nav>
+
+    <!-- Contenedor Principal de Secciones -->
+    <main class="main-container">
+
+        <!-- Pestaña 1: Inicio / Dashboard -->
+        <section id="inicio" class="tab-content active">
+            <div class="dashboard-welcome">
+                <div>
+                    <h1>Buenos días, Karolay 👋</h1>
+                    <p>Consulta y gestiona los hogares que tienes asignados.</p>
                 </div>
+                <span class="badge-tag">• Jornada activa · Octubre 2026</span>
+            </div>
 
-                <!-- Campo dinámico para 'Otro' producto -->
-                <div class="form-group hidden" id="campo-otro-producto">
-                    <label for="otro-producto-nombre">Escriba el nombre del producto:</label>
-                    <input type="text" id="otro-producto-nombre" placeholder="Ej. Fruta local, dulce típico...">
+            <!-- Métricas -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <p>🏠 Hogares asignados</p>
+                    <h3>8</h3>
                 </div>
-
-                <!-- Cantidad y Valor -->
-                <div class="form-group">
-                    <label for="cantidad">Cantidad:</label>
-                    <input type="number" id="cantidad" min="0.01" step="0.01" required placeholder="Ej. 1">
+                <div class="metric-card">
+                    <p>✅ Hogares completados</p>
+                    <h3>2</h3>
                 </div>
-
-                <div class="form-group">
-                    <label for="valor">Valor pagado ($ COP):</label>
-                    <input type="number" id="valor" min="0" step="50" required placeholder="Ej. 5500">
+                <div class="metric-card">
+                    <p>🌓 En proceso</p>
+                    <h3>4</h3>
                 </div>
+                <div class="metric-card">
+                    <p>⚠️️ Pendientes</p>
+                    <h3>2</h3>
+                </div>
+            </div>
 
-                <button type="submit">Agregar al Cuadernillo</button>
-            </form>
-
-            <!-- Tabla resumen de productos ingresados por el Encuestador -->
-            <section class="tabla-resumen">
-                <h4>Productos registrados hoy</h4>
-                <table id="tabla-gastos">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Valor Pagado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Aquí se agregarán los registros con JavaScript -->
-                    </tbody>
-                </table>
-            </section>
+            <!-- Panel de Búsqueda -->
+            <div class="card-panel">
+                <h3>Hogares asignados</h3>
+                <p>Selecciona un hogar para iniciar o continuar el diligenciamiento.</p>
+            </div>
         </section>
+
+        <!-- Pestaña: A - Identificación -->
+        <section id="identificacion" class="tab-content">
+            <div class="card-panel">
+                <h2>Sección A: Identificación del Hogar</h2>
+                <br>
+                <div class="form-group">
+                    <label>Código del Hogar:</label>
+                    <input type="text" class="form-control" value="HOG-68001-014" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Jefe de Hogar:</label>
+                    <input type="text" class="form-control" value="María Gómez">
+                </div>
+                <div class="form-group">
+                    <label>Dirección:</label>
+                    <input type="text" class="form-control" value="Calle 12 # 34-56 · Cabecera">
+                </div>
+                <button class="btn-primary">Guardar Cambios</button>
+            </div>
+        </section>
+
+        <!-- Pestaña: D - Gastos Diarios -->
+        <section id="gastos-diarios" class="tab-content">
+            <div class="card-panel">
+                <h2>Sección D: Cuadernillo 2 - Gastos Diarios</h2>
+                <p>Registro diario de bienes y servicios comprados por el hogar.</p>
+                <br>
+                <form id="form-gasto">
+                    <div class="form-group">
+                        <label>Descripción del Producto:</label>
+                        <input type="text" class="form-control" placeholder="Ej: Arroz blanco 1Kg">
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad:</label>
+                        <input type="number" class="form-control" placeholder="1.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Pagado ($):</label>
+                        <input type="number" class="form-control" placeholder="4200">
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Gasto en Java / BD</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Otras Secciones Genericas -->
+        <section id="control-visitas" class="tab-content">
+            <div class="card-panel"><h2>Sección B: Control de Visitas</h2><p>Módulo en desarrollo.</p></div>
+        </section>
+        <section id="gasto-alimentos" class="tab-content">
+            <div class="card-panel"><h2>Sección C: Gasto en Alimentos</h2><p>Módulo en desarrollo.</p></div>
+        </section>
+        <section id="comidas-fuera" class="tab-content">
+            <div class="card-panel"><h2>Sección D1: Comidas Fuera del Hogar</h2><p>Módulo en desarrollo.</p></div>
+        </section>
+        <section id="consultas" class="tab-content">
+            <div class="card-panel"><h2>Consultas y Reportes</h2><p>Módulo en desarrollo.</p></div>
+        </section>
+
     </main>
 
     <script src="js/app.js"></script>
