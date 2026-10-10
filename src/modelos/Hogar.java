@@ -32,4 +32,10 @@ public class Hogar {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    @Override
+    public String toString() {
+        return "Hogar " + idHogar + " | ubicacion " + codigoUbicacion + " | jefe: " + jefeHogar
+                + " | " + direccion + " | estado: " + estado;
+    }         
 }

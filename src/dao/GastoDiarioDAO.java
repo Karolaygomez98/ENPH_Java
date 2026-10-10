@@ -6,109 +6,203 @@ import modelos.GastoDiario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acceso a datos de la tabla gasto_diario (Oracle). CRUD completo:
+ * Create (registrarGasto), Read (obtener...), Update (actualizarGasto), Delete (eliminarGasto).
+ */
 public class GastoDiarioDAO {
 
+    private static final String COLUMNAS =
+            "id_gasto, id_hogar, dia, categoria, descripcion_producto, cantidad, unidad_medida, valor_pagado, lugar_compra";
+
+    // ---------------------------------------------------------------- CREATE
     /**
-     * Registra un nuevo gasto diario en la base de datos Oracle
-     * @param gasto Objeto con la información del producto/servicio
-     * @return true si se guardó con éxito, false en caso contrario
+     * Inserta un gasto. El id se toma de la secuencia seq_gasto_diario y se
+     * deja en gasto.idGasto. Devuelve true solo si realmente se guardo.
      */
     public boolean registrarGasto(GastoDiario gasto) {
-        Connection con = ConexionBD.obtenerConexion();
-        
-        // Manejo controlado si no hay conexión activa a la BD Oracle
-        if (con == null) {
-            System.out.println("ℹ️ [DAO] Simulación en memoria: Gasto procesado correctamente mediante POO / Java.");
-            return true;
-        }
+        String sqlId = "SELECT seq_gasto_diario.NEXTVAL FROM dual";
+        String sql = "INSERT INTO gasto_diario (" + COLUMNAS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String sql = "INSERT INTO gasto_diario (id_hogar, descripcion_producto, cantidad, unidad_medida, valor_pagado, lugar_compra) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                System.err.println("[DAO] No hay conexion con Oracle: el gasto NO se guardo.");
+                return false;
+            }
+            long id;
+            try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlId)) {
+                rs.next();
+                id = rs.getLong(1);
+            }
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setLong(1, id);
+                ps.setString(2, gasto.getIdHogar());
+                ps.setInt(3, gasto.getDia());
+                ps.setString(4, gasto.getCategoria());
+                ps.setString(5, gasto.getDescripcionProducto());
+                ps.setDouble(6, gasto.getCantidad());
+                ps.setString(7, gasto.getUnidadMedida());
+                ps.setDouble(8, gasto.getValorPagado());
+                ps.setString(9, gasto.getLugarCompra());
 
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, gasto.getIdHogar());
-            ps.setString(2, gasto.getDescripcionProducto());
-            ps.setDouble(3, gasto.getCantidad());
-            ps.setString(4, gasto.getUnidadMedida());
-            ps.setDouble(5, gasto.getValorPagado());
-            ps.setString(6, gasto.getLugarCompra());
-
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
-
-        } catch (Exception e) {
-            System.out.println("❌ Error al insertar el gasto en la base de datos Oracle: " + e.getMessage());
+                boolean ok = ps.executeUpdate() > 0;
+                confirmar(con);
+                if (ok) {
+                    gasto.setIdGasto(String.valueOf(id));
+                }
+                return ok;
+            }
+        } catch (SQLException e) {
+            System.err.println("[DAO] Error al insertar el gasto en Oracle: " + e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Consulta y retorna todos los gastos registrados para un hogar en específico
-     * @param idHogar Código identificador del hogar
-     * @return Lista de objetos GastoDiario
-     */
-    public List<GastoDiario> obtenerGastosPorHogar(String idHogar) {
-        List<GastoDiario> listaGastos = new ArrayList<>();
-        Connection con = ConexionBD.obtenerConexion();
+    // ------------------------------------------------------------------ READ
+    /** Busca un gasto por su id. Devuelve null si no existe o si falla. */
+    public GastoDiario obtenerGastoPorId(String idGasto) {
+        String sql = "SELECT " + COLUMNAS + " FROM gasto_diario WHERE id_gasto = ?";
 
-        if (con == null) {
-            System.out.println("ℹ️ [DAO] Simulación: Retornando lista vacía (Sin conexión a BD).");
-            return listaGastos;
-        }
-
-        String sql = "SELECT id_gasto, id_hogar, descripcion_producto, cantidad, unidad_medida, valor_pagado, lugar_compra FROM gasto_diario WHERE id_hogar = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, idHogar);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                GastoDiario gasto = new GastoDiario(
-                    String.valueOf(rs.getInt("id_gasto")),
-                    rs.getString("id_hogar"),
-                    rs.getString("descripcion_producto"),
-                    rs.getDouble("cantidad"),
-                    rs.getString("unidad_medida"),
-                    rs.getDouble("valor_pagado"),
-                    rs.getString("lugar_compra")
-                );
-                listaGastos.add(gasto);
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                System.err.println("[DAO] No hay conexion con Oracle: no se pudo consultar.");
+                return null;
             }
-        } catch (Exception e) {
-            System.out.println("❌ Error al consultar gastos del hogar en Oracle: " + e.getMessage());
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setLong(1, Long.parseLong(idGasto));
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return mapear(rs);
+                    }
+                }
+            }
+        } catch (SQLException | NumberFormatException e) {
+            System.err.println("[DAO] Error al consultar el gasto: " + e.getMessage());
         }
-
-        return listaGastos;
+        return null;
     }
 
-    /**
-     * Calcula la suma total en pesos ($) de todos los gastos de un hogar
-     * @param idHogar Código del hogar
-     * @return Suma en valor decimal
-     */
-    public double obtenerTotalGastosHogar(String idHogar) {
-        double total = 0.0;
-        Connection con = ConexionBD.obtenerConexion();
+    /** Devuelve todos los gastos de un hogar (lista vacia si no hay o si falla). */
+    public List<GastoDiario> obtenerGastosPorHogar(String idHogar) {
+        List<GastoDiario> lista = new ArrayList<>();
+        String sql = "SELECT " + COLUMNAS + " FROM gasto_diario WHERE id_hogar = ? ORDER BY dia, id_gasto";
 
-        if (con == null) {
-            return total;
-        }
-
-        String sql = "SELECT SUM(valor_pagado) AS total_gastado FROM gasto_diario WHERE id_hogar = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, idHogar);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                total = rs.getDouble("total_gastado");
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                System.err.println("[DAO] No hay conexion con Oracle: no se pudo consultar.");
+                return lista;
             }
-        } catch (Exception e) {
-            System.out.println("❌ Error al calcular el total de gastos: " + e.getMessage());
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, idHogar);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        lista.add(mapear(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[DAO] Error al consultar gastos en Oracle: " + e.getMessage());
         }
+        return lista;
+    }
 
-        return total;
+    /** Suma de valor_pagado de un hogar (0 si no hay gastos o si falla). */
+    public double obtenerTotalGastosHogar(String idHogar) {
+        String sql = "SELECT NVL(SUM(valor_pagado), 0) AS total_gastado FROM gasto_diario WHERE id_hogar = ?";
+
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                return 0.0;
+            }
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, idHogar);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getDouble("total_gastado");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[DAO] Error al calcular el total de gastos: " + e.getMessage());
+        }
+        return 0.0;
+    }
+
+    // ---------------------------------------------------------------- UPDATE
+    /** Actualiza los datos de un gasto existente (se identifica por idGasto). */
+    public boolean actualizarGasto(GastoDiario gasto) {
+        String sql = "UPDATE gasto_diario SET dia = ?, categoria = ?, descripcion_producto = ?, cantidad = ?, "
+                + "unidad_medida = ?, valor_pagado = ?, lugar_compra = ? WHERE id_gasto = ?";
+
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                System.err.println("[DAO] No hay conexion con Oracle: el gasto NO se actualizo.");
+                return false;
+            }
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, gasto.getDia());
+                ps.setString(2, gasto.getCategoria());
+                ps.setString(3, gasto.getDescripcionProducto());
+                ps.setDouble(4, gasto.getCantidad());
+                ps.setString(5, gasto.getUnidadMedida());
+                ps.setDouble(6, gasto.getValorPagado());
+                ps.setString(7, gasto.getLugarCompra());
+                ps.setLong(8, Long.parseLong(gasto.getIdGasto()));
+
+                boolean ok = ps.executeUpdate() > 0;
+                confirmar(con);
+                return ok;
+            }
+        } catch (SQLException | NumberFormatException e) {
+            System.err.println("[DAO] Error al actualizar el gasto: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // ---------------------------------------------------------------- DELETE
+    /** Elimina un gasto por su id. Devuelve true si se borro una fila. */
+    public boolean eliminarGasto(String idGasto) {
+        String sql = "DELETE FROM gasto_diario WHERE id_gasto = ?";
+
+        try (Connection con = ConexionBD.obtenerConexion()) {
+            if (con == null) {
+                System.err.println("[DAO] No hay conexion con Oracle: el gasto NO se elimino.");
+                return false;
+            }
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setLong(1, Long.parseLong(idGasto));
+                boolean ok = ps.executeUpdate() > 0;
+                confirmar(con);
+                return ok;
+            }
+        } catch (SQLException | NumberFormatException e) {
+            System.err.println("[DAO] Error al eliminar el gasto: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // --------------------------------------------------------------- Ayudas
+    private GastoDiario mapear(ResultSet rs) throws SQLException {
+        return new GastoDiario(
+                String.valueOf(rs.getLong("id_gasto")),
+                rs.getString("id_hogar"),
+                rs.getInt("dia"),
+                rs.getString("categoria"),
+                rs.getString("descripcion_producto"),
+                rs.getDouble("cantidad"),
+                rs.getString("unidad_medida"),
+                rs.getDouble("valor_pagado"),
+                rs.getString("lugar_compra"));
+    }
+
+    private void confirmar(Connection con) throws SQLException {
+        if (!con.getAutoCommit()) {
+            con.commit();
+        }
     }
 }
