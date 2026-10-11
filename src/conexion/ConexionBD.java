@@ -16,7 +16,7 @@ public class ConexionBD {
     // Se pueden cambiar con variables de entorno sin modificar el código
     private static final String URL = leer("DB_URL", "jdbc:oracle:thin:@localhost:1521:xe");
     private static final String USUARIO = leer("DB_USER", "ENPH");
-    private static final String CLAVE   = leer("DB_PASS", "enph123");
+    private static final String CLAVE = leer("DB_PASS", "enph123");
 
     private ConexionBD() { } // clase utilitaria: no se instancia
 

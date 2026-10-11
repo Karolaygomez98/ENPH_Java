@@ -1,23 +1,36 @@
 import conexion.ConexionBD;
+import modelos.Encuestador;
 import modelos.GastoDiario;
 import modelos.Hogar;
+import servicios.EncuestadorServicio;
 import servicios.GastoServicio;
 import servicios.HogarServicio;
 
 import java.util.List;
 
 /**
- * Prueba del backend: conexion a Oracle y CRUD completo de gasto_diario y hogares.
+ * Prueba del backend: conexion a Oracle y CRUD completo de gasto_diario.
  * Requiere que exista el hogar HOG-68001-014 en la tabla hogares.
  */
 public class Main {
 
     private static final String HOGAR = "HOG-68001-014";
 
+    /** Pequena pausa entre operaciones: Oracle XE libera las conexiones con algo de retraso. */
+    private static void pausa() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     public static void main(String[] args) {
         System.out.println("==================================================");
         System.out.println("   DANE - ENPH / PRUEBA CRUD BACKEND (CUADERNILLO 2)");
         System.out.println("==================================================");
+
+        pausa();
 
         System.out.println("\n[0] Probando conexion con Oracle...");
         if (!ConexionBD.probarConexion()) {
@@ -29,6 +42,7 @@ public class Main {
         GastoServicio servicio = new GastoServicio();
 
         // ---------- CREATE ----------
+        pausa();
         System.out.println("\n[1] CREATE - registrar un gasto nuevo");
         GastoDiario gasto = new GastoDiario(null, HOGAR, 2, "Alimentos", "Leche entera", 3.0, "Litros", 12000.0, "Supermercado");
         if (!servicio.guardarNuevoGasto(gasto)) {
@@ -38,6 +52,7 @@ public class Main {
         System.out.println("    Creado: " + gasto);
 
         // ---------- READ ----------
+        pausa();
         System.out.println("\n[2] READ - consultar el gasto por ID y los gastos del hogar");
         GastoDiario leido = servicio.consultarGasto(gasto.getIdGasto());
         System.out.println("    Por ID: " + leido);
@@ -49,6 +64,7 @@ public class Main {
         System.out.println("    Total gastado por el hogar: $" + servicio.calcularTotalGastoHogar(HOGAR));
 
         // ---------- UPDATE ----------
+        pausa();
         System.out.println("\n[3] UPDATE - cambiar cantidad y valor pagado");
         gasto.setCantidad(5.0);
         gasto.setValorPagado(20000.0);
@@ -59,12 +75,14 @@ public class Main {
         }
 
         // ---------- DELETE ----------
+        pausa();
         System.out.println("\n[4] DELETE - eliminar el gasto de prueba");
         if (servicio.eliminarGasto(gasto.getIdGasto())) {
             System.out.println("    Eliminado. Consulta posterior: " + servicio.consultarGasto(gasto.getIdGasto()));
         } else {
             System.out.println("    No se pudo eliminar.");
         }
+
 
         // =====================================================
         //  CRUD DE LA TABLA hogares
@@ -75,12 +93,16 @@ public class Main {
         HogarServicio hogares = new HogarServicio();
         Hogar nuevo = new Hogar("HOG-PRUEBA-001", "68001", "Carlos Perez", "Carrera 10 No 20-30", "En proceso");
 
+        pausa();
+
         System.out.println("\n[H1] CREATE - registrar un hogar nuevo");
         if (!hogares.guardarNuevoHogar(nuevo)) {
             System.out.println("    No se pudo crear el hogar. Fin de la prueba.");
             return;
         }
         System.out.println("    Creado: " + nuevo);
+
+        pausa();
 
         System.out.println("\n[H2] READ - consultar por ID y listar los hogares");
         System.out.println("    Por ID: " + hogares.consultarHogar(nuevo.getIdHogar()));
@@ -89,6 +111,8 @@ public class Main {
         for (Hogar h : todos) {
             System.out.println("      - " + h);
         }
+
+        pausa();
 
         System.out.println("\n[H3] UPDATE - cambiar el estado y la direccion");
         nuevo.setEstado("Completado");
@@ -99,9 +123,59 @@ public class Main {
             System.out.println("    No se pudo actualizar.");
         }
 
+        pausa();
+
         System.out.println("\n[H4] DELETE - eliminar el hogar de prueba");
         if (hogares.eliminarHogar(nuevo.getIdHogar())) {
             System.out.println("    Eliminado. Consulta posterior: " + hogares.consultarHogar(nuevo.getIdHogar()));
+        } else {
+            System.out.println("    No se pudo eliminar.");
+        }
+
+        // =====================================================
+        //  CRUD DE LA TABLA encuestadores
+        // =====================================================
+        System.out.println("\n--------------------------------------------------");
+        System.out.println("   CRUD TABLA ENCUESTADORES");
+        System.out.println("--------------------------------------------------");
+        EncuestadorServicio encuestadores = new EncuestadorServicio();
+        Encuestador enc = new Encuestador("enc-prueba", "Laura Ramirez", "Encuestador");
+
+        pausa();
+
+        System.out.println("\n[E1] CREATE - registrar un encuestador nuevo");
+        if (!encuestadores.guardarNuevoEncuestador(enc)) {
+            System.out.println("    No se pudo crear el encuestador. Fin de la prueba.");
+            return;
+        }
+        System.out.println("    Creado: " + enc);
+
+        pausa();
+
+        System.out.println("\n[E2] READ - consultar por usuario y listar los encuestadores");
+        System.out.println("    Por usuario: " + encuestadores.consultarEncuestador(enc.getUsuario()));
+        List<Encuestador> listaEnc = encuestadores.listarEncuestadores();
+        System.out.println("    Encuestadores registrados (" + listaEnc.size() + "):");
+        for (Encuestador x : listaEnc) {
+            System.out.println("      - " + x);
+        }
+
+        pausa();
+
+        System.out.println("\n[E3] UPDATE - cambiar el nombre y el rol");
+        enc.setNombreCompleto("Laura Ramirez Gomez");
+        enc.setRol("Supervisor");
+        if (encuestadores.actualizarEncuestador(enc)) {
+            System.out.println("    Despues de actualizar: " + encuestadores.consultarEncuestador(enc.getUsuario()));
+        } else {
+            System.out.println("    No se pudo actualizar.");
+        }
+
+        pausa();
+
+        System.out.println("\n[E4] DELETE - eliminar el encuestador de prueba");
+        if (encuestadores.eliminarEncuestador(enc.getUsuario())) {
+            System.out.println("    Eliminado. Consulta posterior: " + encuestadores.consultarEncuestador(enc.getUsuario()));
         } else {
             System.out.println("    No se pudo eliminar.");
         }
