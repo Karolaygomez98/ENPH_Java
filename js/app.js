@@ -697,6 +697,31 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                             </div>
                         </div>
 
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.4rem;">CANTIDAD</label>
+                                <input type="number" id="gasto-d-cantidad" value="1" min="0" step="0.01" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.4rem;">UNIDAD DE MEDIDA</label>
+                                <select id="gasto-d-unidad" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; background: white; box-sizing: border-box;">
+                                    <option value="Unidad">Unidad</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Gramos">Gramos</option>
+                                    <option value="Libras">Libras</option>
+                                    <option value="Litros">Litros</option>
+                                    <option value="Mililitros">Mililitros</option>
+                                    <option value="Paquete">Paquete</option>
+                                    <option value="Docena">Docena</option>
+                                    <option value="Servicio">Servicio</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.4rem;">LUGAR DE COMPRA</label>
+                                <input type="text" id="gasto-d-lugar" list="lista-lugares-d" placeholder="Ej. Tienda de barrio, Supermercado" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
+                            </div>
+                        </div>
+
                         <!-- Se muestra solo si la categoría es "Otro" -->
                         <div id="contenedor-categoria-otro" style="display: none; margin-bottom: 1rem; max-width: 400px;">
                             <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.4rem;">ESPECIFIQUE LA CATEGORÍA</label>
@@ -709,12 +734,15 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                         </div>
 
                         <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; margin-bottom: 2rem;">
+                        <table style="width: 100%; min-width: 900px; border-collapse: collapse; text-align: left; font-size: 0.85rem; margin-bottom: 2rem;">
                             <thead>
                                 <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
                                     <th style="padding: 0.8rem;">Fecha</th>
                                     <th style="padding: 0.8rem;">Categoría</th>
                                     <th style="padding: 0.8rem;">Artículo / Servicio</th>
+                                    <th style="padding: 0.8rem;">Cantidad</th>
+                                    <th style="padding: 0.8rem;">Unidad</th>
+                                    <th style="padding: 0.8rem;">Lugar de compra</th>
                                     <th style="padding: 0.8rem;">Valor ($)</th>
                                     <th style="padding: 0.8rem; text-align: center;">Acciones</th>
                                 </tr>
@@ -890,6 +918,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
     const CAMPOS_BORRADOR = [
         'visita-fecha', 'visita-inicio', 'visita-fin', 'visita-resultado', 'visita-partes', 'visita-proxima',
         'gasto-d-fecha', 'gasto-d-categoria', 'gasto-d-categoria-otro', 'gasto-d-concepto', 'gasto-d-valor',
+        'gasto-d-cantidad', 'gasto-d-unidad', 'gasto-d-lugar',
         'comida-d1-tipo', 'comida-d1-lugar', 'comida-d1-valor'
     ];
 
@@ -1178,6 +1207,25 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         document.body.appendChild(dl);
     }
 
+    // Sugerencias para la unidad de medida y el lugar de compra (se puede escribir otra distinta)
+    function asegurarListasUnidadLugar() {
+        const listas = {
+            'lista-unidades-d': ['Unidad', 'Kilos', 'Gramos', 'Libras', 'Litros', 'Mililitros', 'Paquete', 'Docena', 'Servicio'],
+            'lista-lugares-d': ['Tienda de barrio', 'Supermercado', 'Plaza de mercado', 'Vendedor ambulante', 'Panadería', 'Droguería']
+        };
+        Object.keys(listas).forEach(idLista => {
+            if (document.getElementById(idLista)) return;
+            const dl = document.createElement('datalist');
+            dl.id = idLista;
+            listas[idLista].forEach(t => {
+                const o = document.createElement('option');
+                o.value = t;
+                dl.appendChild(o);
+            });
+            document.body.appendChild(dl);
+        });
+    }
+
     // Input editable: guarda al cambiar. onCambio devuelve false si el valor es inválido
     function crearCeldaInput(tipo, valorActual, onCambio, listaId) {
         const inp = document.createElement('input');
@@ -1204,13 +1252,14 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
         asegurarEstilosEditables();
         asegurarListaCategorias();
+        asegurarListasUnidadLugar();
 
         tbody.innerHTML = '';
         const todos = hogarSeleccionadoActual.gastosDiarios || [];
         const lista = todos.map((g, idx) => ({ g, idx })).filter(x => Number(x.g.dia || 1) === diaActual);
 
         if (lista.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; color: #888; text-align: center;">No hay gastos registrados para el día ${diaActual}.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="padding: 1rem; color: #888; text-align: center;">No hay gastos registrados para el día ${diaActual}.</td></tr>`;
             return;
         }
 
@@ -1219,12 +1268,14 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             tr.style.borderBottom = '1px solid #eee';
 
             const celdas = [];
-            for (let k = 0; k < 5; k++) {
+            for (let k = 0; k < 8; k++) {
                 const td = document.createElement('td');
                 td.style.padding = '0.4rem 0.5rem';
                 celdas.push(td);
                 tr.appendChild(td);
             }
+            // Anchos minimos para que ningun texto se corte
+            [130, 125, 140, 70, 90, 150, 80, 80].forEach((ancho, k) => { celdas[k].style.minWidth = ancho + 'px'; });
 
             celdas[0].appendChild(crearCeldaInput('date', g.fecha, (v) => { g.fecha = v; }));
 
@@ -1239,7 +1290,20 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                 g.concepto = v.trim();
             }));
 
-            celdas[3].appendChild(crearCeldaInput('number', g.valor, (v, inp) => {
+            celdas[3].appendChild(crearCeldaInput('number', (g.cantidad === undefined || g.cantidad === '') ? 1 : g.cantidad, (v, inp) => {
+                if (v === '' || Number(v) <= 0) {
+                    alert('Ingrese una cantidad mayor a 0.');
+                    inp.value = (g.cantidad === undefined || g.cantidad === '') ? 1 : g.cantidad;
+                    return false;
+                }
+                g.cantidad = v;
+            }));
+
+            celdas[4].appendChild(crearCeldaInput('text', g.unidad || 'Unidad', (v) => { g.unidad = v.trim() || 'Unidad'; }, 'lista-unidades-d'));
+
+            celdas[5].appendChild(crearCeldaInput('text', g.lugar || '', (v) => { g.lugar = v.trim(); }, 'lista-lugares-d'));
+
+            celdas[6].appendChild(crearCeldaInput('number', g.valor, (v, inp) => {
                 if (v === '' || Number(v) < 0) {
                     alert('Ingrese un valor válido.');
                     inp.value = g.valor;
@@ -1248,8 +1312,8 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                 g.valor = v;
             }));
 
-            celdas[4].style.textAlign = 'center';
-            celdas[4].appendChild(crearBotonEliminar(() => {
+            celdas[7].style.textAlign = 'center';
+            celdas[7].appendChild(crearBotonEliminar(() => {
                 if (confirm('¿Eliminar este gasto?')) {
                     todos.splice(idx, 1);
                     guardarHogaresBD();
@@ -1711,6 +1775,9 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             let categoria = document.getElementById('gasto-d-categoria').value;
             const concepto = document.getElementById('gasto-d-concepto').value.trim();
             const valor = document.getElementById('gasto-d-valor').value;
+            const cantidad = document.getElementById('gasto-d-cantidad').value || '1';
+            const unidad = document.getElementById('gasto-d-unidad').value || 'Unidad';
+            const lugar = document.getElementById('gasto-d-lugar').value.trim();
 
             if (categoria === 'Otro') {
                 categoria = document.getElementById('gasto-d-categoria-otro').value.trim();
@@ -1727,14 +1794,21 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
             if (!hogarSeleccionadoActual.gastosDiarios) hogarSeleccionadoActual.gastosDiarios = [];
 
-            hogarSeleccionadoActual.gastosDiarios.push({ dia: diaActual, fecha, categoria, concepto, valor });
+            if (Number(cantidad) <= 0) {
+                alert('La cantidad debe ser mayor a 0.');
+                return;
+            }
+
+            hogarSeleccionadoActual.gastosDiarios.push({ dia: diaActual, fecha, categoria, concepto, cantidad, unidad, lugar, valor });
             guardarHogaresBD();
             renderDiaD();
 
             document.getElementById('gasto-d-concepto').value = '';
             document.getElementById('gasto-d-valor').value = '';
             document.getElementById('gasto-d-categoria-otro').value = '';
-            limpiarBorrador(['gasto-d-concepto', 'gasto-d-valor', 'gasto-d-categoria-otro']);
+            document.getElementById('gasto-d-cantidad').value = '1';
+            document.getElementById('gasto-d-lugar').value = '';
+            limpiarBorrador(['gasto-d-concepto', 'gasto-d-valor', 'gasto-d-categoria-otro', 'gasto-d-cantidad', 'gasto-d-lugar']);
         });
     }
 
@@ -1776,6 +1850,9 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                     fecha: sumarUnDia(g.fecha),
                     categoria: g.categoria || '',
                     concepto: g.concepto,
+                    cantidad: g.cantidad,
+                    unidad: g.unidad,
+                    lugar: g.lugar,
                     valor: g.valor
                 });
             });
@@ -1981,7 +2058,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                     if (d && d.frecuencia) filas.push([...base, a.id, a.nombre, d.frecuencia, d.valor, d.comprara === '1' ? 'Sí' : (d.comprara === '2' ? 'No' : '')]);
                 });
             } else if (tipo === 'gastos') {
-                (h.gastosDiarios || []).forEach(g => filas.push([...base, g.dia || 1, g.fecha, g.categoria || '', g.concepto, g.valor]));
+                (h.gastosDiarios || []).forEach(g => filas.push([...base, g.dia || 1, g.fecha, g.categoria || '', g.concepto, g.cantidad || 1, g.unidad || 'Unidad', g.lugar || '', g.valor]));
             } else if (tipo === 'comidas') {
                 (h.comidasFuera || []).forEach(c => filas.push([...base, c.dia || 1, c.tipo, c.lugar, c.valor]));
             }
@@ -1991,7 +2068,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             consolidado: ['Código', 'Jefe de hogar', 'Dirección', 'Estado', 'Visitas', 'Grupos C diligenciados', 'Días con gastos', 'Total D', 'N° comidas fuera', 'Total comidas fuera', 'Total general'],
             visitas: ['Código', 'Jefe de hogar', 'N° visita', 'Fecha', 'Inicio', 'Fin', 'Resultado', 'Observación'],
             capc: ['Código', 'Jefe de hogar', 'Item', 'Grupo de alimentos', 'Frecuencia', 'Valor última compra', '¿Comprará próx. 14 días?'],
-            gastos: ['Código', 'Jefe de hogar', 'Día', 'Fecha', 'Categoría', 'Descripción', 'Valor'],
+            gastos: ['Código', 'Jefe de hogar', 'Día', 'Fecha', 'Categoría', 'Descripción', 'Cantidad', 'Unidad', 'Lugar de compra', 'Valor'],
             comidas: ['Código', 'Jefe de hogar', 'Día', 'Tipo de comida', 'Establecimiento', 'Valor']
         };
         if (filas.length === 0) {
