@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
-    // Limpia la sesión que quedó guardada de versiones anteriores
+    // Limpia la sesión que quedó guardada de versiones anteriores (siempre pedía entrar directo)
     localStorage.removeItem('currentUser');
     localStorage.removeItem('userRole');
 
-    // La sesión vive solo mientras la pestaña esté abierta
+    // La sesión vive solo mientras la pestaña esté abierta: al abrir la página de nuevo se pide el usuario
     const savedUser = sessionStorage.getItem('currentUser');
     if (savedUser) {
         cargarDashboardInicioSuperior(savedUser);
@@ -223,7 +223,7 @@ function guardarHogaresBD() {
     }
 }
 
-// Guarda los datos iniciales si no existen
+// Guarda de una vez los datos iniciales para que existan desde la primera carga
 if (!localStorage.getItem('hogaresBD_dane')) {
     guardarHogaresBD();
 }
@@ -231,7 +231,7 @@ if (!localStorage.getItem('hogaresBD_dane')) {
 function cargarDashboardInicioSuperior(nombreUsuario) {
     const primerNombre = nombreUsuario.split(' ')[0] || 'Karolay';
 
-    // Banner del hogar activo
+    // Banner del hogar activo (se reutiliza en las pestañas A, B y C)
     const bannerHogar = `
         <div class="banner-hogar-activo" style="background-color: #3b1928; color: white; border-radius: 12px; padding: 1.2rem 1.8rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <div style="display: flex; align-items: center; gap: 1.2rem;">
@@ -259,6 +259,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
     document.body.innerHTML = `
         <style>
+            /* LISTA VERTICAL DE HOGARES: una tarjeta por fila */
             .hogares-grid-container {
                 display: flex;
                 flex-direction: column;
@@ -343,7 +344,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             <!-- HEADER SUPERIOR PRINCIPAL -->
             <header class="main-top-bar">
                 <div class="top-bar-left">
-                    <img src="img/logo-udi-dane.png" alt="Emblema UDI · DANE de Vivienda y Análisis" class="brand-logo-top">
+                    <div class="brand-badge-top">EN</div>
                     <div class="brand-titles">
                         <span class="dane-tag">DANE · ENPH</span>
                         <h1>Gestión de hogares <span class="sub-cuadernillo">· Cuadernillo 2</span></h1>
@@ -643,7 +644,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                     </div>
                 </div>
 
-                <!-- SECCIÓN 5: GASTOS DIARIOS (D) -->
+                <!-- SECCIÓN 5: GASTOS DIARIOS (D) + COMIDAS FUERA DEL HOGAR (D1 integrado) -->
                 <div id="gastos-diarios" class="tab-section" style="display:none; max-width: 1100px; margin: 0 auto;">
                     <div style="font-size: 0.8rem; color: #777; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 0.2rem;">
                         HOGAR ACTIVO · CAPÍTULO D
@@ -654,6 +655,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
                     <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
 
+                        <!-- SELECTOR DE DÍAS 1 A 14 (parte superior) -->
                         <div style="margin-bottom: 1.5rem;">
                             <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.6rem; letter-spacing: 0.5px;">
                                 Día de recolección (1 al 14)
@@ -664,6 +666,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
                         <h3 id="titulo-dia-d" style="margin: 0 0 1rem 0; font-size: 1.2rem; color: #5c1822; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.4rem;">Día 1 de 14</h3>
 
+                        <!-- Gastos diarios del día -->
                         <h4 style="margin: 0 0 0.8rem 0; color: #222;">Gastos del día</h4>
                         <p style="margin: -0.4rem 0 1rem 0; color: #777; font-size: 0.8rem;">Puede editar directamente cualquier celda de la tabla; los cambios se guardan automáticamente.</p>
                         <div style="display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -694,6 +697,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                             </div>
                         </div>
 
+                        <!-- Se muestra solo si la categoría es "Otro" -->
                         <div id="contenedor-categoria-otro" style="display: none; margin-bottom: 1rem; max-width: 400px;">
                             <label style="display: block; font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 0.4rem;">ESPECIFIQUE LA CATEGORÍA</label>
                             <input type="text" id="gasto-d-categoria-otro" placeholder="Escriba la categoría" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;">
@@ -719,6 +723,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                         </table>
                         </div>
 
+                        <!-- Pregunta de comidas preparadas fuera del hogar -->
                         <div style="background: #fdfbf7; border: 1px solid #e2d9cf; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem;">
                             <h4 style="margin: 0 0 0.8rem 0; color: #222;">¿Algún miembro del hogar consumió alimentos preparados fuera del hogar este día?</h4>
                             <div style="display: flex; gap: 2rem;">
@@ -731,6 +736,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                             </div>
                         </div>
 
+                        <!-- Bloque D1: solo se muestra si responde Sí -->
                         <div id="bloque-comidas-fuera" style="display: none; margin-bottom: 2rem;">
                             <h4 style="margin: 0 0 0.8rem 0; color: #222;">Comidas fuera del hogar</h4>
                             <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
@@ -776,77 +782,73 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                     </div>
                 </div>
 
-                <!-- SECCIÓN 6: CONSULTAS -->
-                <div id="consultas" class="tab-section" style="display:none; max-width: 1100px; margin: 0 auto;">
-                    <div style="font-size: 0.8rem; color: #777; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 0.2rem;">
-                        SISTEMA DE MONITOREO
-                    </div>
+                <!-- SECCIÓN 7: CONSULTAS -->
+                <div id="consultas" class="tab-section" style="display:none; max-width: 1200px; margin: 0 auto;">
+                    <div style="font-size: 0.8rem; color: #777; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 0.2rem;">SISTEMA DE MONITOREO</div>
                     <h2 style="font-size: 1.8rem; color: #222; margin-top: 0; margin-bottom: 1.5rem; font-weight: 800;">Consultas</h2>
-                    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
+                    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
                         <h3 style="margin-top: 0; font-size: 1.2rem; color: #222;">Resumen general de avance</h3>
                         <div id="resumen-estadistico" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;"></div>
                     </div>
+                    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.2rem; color: #222;">¿Qué diligenció cada hogar?</h3>
+                                <p style="margin: 0.2rem 0 0 0; color: #777; font-size: 0.85rem;">Haga clic en una fila para ver el detalle.</p>
+                            </div>
+                            <select id="filtro-consultas" style="padding: 0.6rem; border: 1px solid #ced4da; border-radius: 8px; background: white;">
+                                <option value="todos">Todos los hogares</option>
+                                <option value="sinC">Sin Capítulo C</option>
+                                <option value="sinD">Sin gastos (D)</option>
+                            </select>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                                <thead>
+                                    <tr style="background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                                        <th style="padding: 0.7rem;">Hogar</th><th style="padding: 0.7rem;">Jefe</th><th style="padding: 0.7rem;">A</th><th style="padding: 0.7rem;">B</th><th style="padding: 0.7rem;">C</th><th style="padding: 0.7rem;">D</th><th style="padding: 0.7rem;">D1</th><th style="padding: 0.7rem;">Total gastado</th><th style="padding: 0.7rem;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-consultas-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- SECCIÓN 7: REPORTES Y MONITOREO -->
-                <div id="reportes" class="tab-section" style="display:none; max-width: 1100px; margin: 0 auto;">
-                    <div style="font-size: 0.8rem; color: #777; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 0.2rem;">
-                        SISTEMA DE INFORMACIÓN Y REPORTES
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h2 style="font-size: 1.8rem; color: #222; margin: 0; font-weight: 800;">Reportes de Operación</h2>
-                        <button id="btn-exportar-csv" style="background-color: #2d6a4f; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-                            📥 Exportar Reporte (CSV)
-                        </button>
-                    </div>
-
-                    <!-- Métricas destacadas del reporte -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.8rem;">
-                        <div style="background: white; padding: 1.2rem; border-radius: 10px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.8rem; color: #666; font-weight: 600;">HOGARES TOTALES</div>
-                            <div id="rep-met-totales" style="font-size: 1.8rem; font-weight: 800; color: #111827; margin-top: 0.2rem;">0</div>
-                        </div>
-                        <div style="background: white; padding: 1.2rem; border-radius: 10px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.8rem; color: #666; font-weight: 600;">AVANCE COBERTURA</div>
-                            <div id="rep-met-avance" style="font-size: 1.8rem; font-weight: 800; color: #059669; margin-top: 0.2rem;">0%</div>
-                        </div>
-                        <div style="background: white; padding: 1.2rem; border-radius: 10px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.8rem; color: #666; font-weight: 600;">VISITAS REALIZADAS</div>
-                            <div id="rep-met-visitas" style="font-size: 1.8rem; font-weight: 800; color: #a11242; margin-top: 0.2rem;">0</div>
-                        </div>
-                        <div style="background: white; padding: 1.2rem; border-radius: 10px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.8rem; color: #666; font-weight: 600;">GASTOS REGISTRADOS</div>
-                            <div id="rep-met-gastos" style="font-size: 1.8rem; font-weight: 800; color: #2563eb; margin-top: 0.2rem;">0</div>
+                <!-- SECCIÓN 8: REPORTES -->
+                <div id="reportes" class="tab-section" style="display:none; max-width: 1200px; margin: 0 auto;">
+                    <style>
+                        @media print {
+                            body * { visibility: hidden; }
+                            #reporte-imprimible, #reporte-imprimible * { visibility: visible; }
+                            #reporte-imprimible { position: absolute; left: 0; top: 0; width: 100%; }
+                        }
+                    </style>
+                    <div style="font-size: 0.8rem; color: #777; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 0.2rem;">SISTEMA DE MONITOREO</div>
+                    <h2 style="font-size: 1.8rem; color: #222; margin-top: 0; margin-bottom: 1.5rem; font-weight: 800;">Reportes</h2>
+                    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                        <h3 style="margin-top: 0; font-size: 1.2rem; color: #222;">Descargar (Excel / CSV)</h3>
+                        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            <button data-reporte="consolidado" style="background:#1e5235;color:white;border:none;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">📥 Consolidado por hogar</button>
+                            <button data-reporte="visitas" style="background:#f8f9fa;color:#333;border:1px solid #ced4da;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">📥 Visitas (B)</button>
+                            <button data-reporte="capc" style="background:#f8f9fa;color:#333;border:1px solid #ced4da;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">📥 Alimentos (C)</button>
+                            <button data-reporte="gastos" style="background:#f8f9fa;color:#333;border:1px solid #ced4da;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">📥 Gastos diarios (D)</button>
+                            <button data-reporte="comidas" style="background:#f8f9fa;color:#333;border:1px solid #ced4da;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">📥 Comidas fuera (D1)</button>
                         </div>
                     </div>
-
-                    <!-- Tabla del reporte -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9ecef; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-                            <h3 style="margin: 0; font-size: 1.1rem; color: #333;">Consolidado de Hogares</h3>
-                            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #555;">Filtrar por estado:</label>
-                                <select id="filtro-reporte-estado" style="padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #ced4da; font-size: 0.85rem; background: white;">
-                                    <option value="todos">Todos</option>
-                                    <option value="completado">Completados</option>
-                                    <option value="proceso">En proceso</option>
-                                    <option value="pendiente">Pendientes</option>
-                                </select>
+                    <div id="reporte-imprimible" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e9ecef;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.2rem; color: #5c1822;">DANE · ENPH · Cuadernillo 2 — Reporte consolidado</h3>
+                                <p id="reporte-fecha" style="margin: 0.2rem 0 0 0; color: #777; font-size: 0.85rem;"></p>
                             </div>
+                            <button id="btn-imprimir-reporte" style="background:#6c757d;color:white;border:none;padding:0.6rem 1.1rem;border-radius:8px;font-weight:600;cursor:pointer;">🖨 Imprimir / Guardar PDF</button>
                         </div>
-
                         <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
                                 <thead>
-                                    <tr style="background-color: #f8f9fa; color: #4b5563; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; border-bottom: 2px solid #e5e7eb;">
-                                        <th style="padding: 0.8rem 1rem;">CÓDIGO</th>
-                                        <th style="padding: 0.8rem 1rem;">JEFE DE HOGAR</th>
-                                        <th style="padding: 0.8rem 1rem;">DIRECCIÓN</th>
-                                        <th style="padding: 0.8rem 1rem;">ESTADO</th>
-                                        <th style="padding: 0.8rem 1rem; text-align: center;">PROGRESO</th>
-                                        <th style="padding: 0.8rem 1rem; text-align: center;">VISITAS</th>
-                                        <th style="padding: 0.8rem 1rem; text-align: center;">GASTOS REG.</th>
-                                        <th style="padding: 0.8rem 1rem; text-align: right;">TOTAL GASTADO</th>
+                                    <tr style="background-color: #1e5235; color: white;">
+                                        <th style="padding: 0.7rem;">Hogar</th><th style="padding: 0.7rem;">Jefe</th><th style="padding: 0.7rem;">Estado</th><th style="padding: 0.7rem;">Visitas</th><th style="padding: 0.7rem;">Días con gastos</th><th style="padding: 0.7rem;">Total D</th><th style="padding: 0.7rem;">Comidas fuera</th><th style="padding: 0.7rem;">Total general</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-reporte-body"></tbody>
@@ -863,14 +865,16 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
     // LÓGICA Y FUNCIONALIDADES
     // ==========================================
 
+    // Ningún hogar queda abierto al iniciar: solo se abre al hacer clic en una tarjeta
     let hogarSeleccionadoActual = null;
     let hogarAbierto = false;
-    let diaActual = 1;
+    let diaActual = 1; // día 1 a 14 del capítulo D
 
     // ==========================================
     // AUTOGUARDADO
     // ==========================================
 
+    // Indicador visual de guardado
     onGuardado = function (ok) {
         const el = document.getElementById('indicador-guardado');
         if (!el) return;
@@ -882,6 +886,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         el._t = setTimeout(() => { el.style.opacity = '0.55'; }, 2500);
     };
 
+    // Borradores: lo que se está escribiendo en los formularios (aunque no se haya pulsado "Agregar")
     const CAMPOS_BORRADOR = [
         'visita-fecha', 'visita-inicio', 'visita-fin', 'visita-resultado', 'visita-partes', 'visita-proxima',
         'gasto-d-fecha', 'gasto-d-categoria', 'gasto-d-categoria-otro', 'gasto-d-concepto', 'gasto-d-valor',
@@ -980,131 +985,6 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         }
     }
 
-    // ==========================================
-    // LÓGICA DE REPORTES
-    // ==========================================
-    function aNumero(v) {
-        const n = Number(String(v ?? '').replace(/[^\d.-]/g, ''));
-        return isFinite(n) ? n : 0;
-    }
-
-    function totalesHogar(h) {
-        let alimentos = 0;
-        const c = h.capituloC || {};
-        Object.keys(c).forEach(k => {
-            if (c[k] && typeof c[k] === 'object' && k !== 'mercadosGlobales') alimentos += aNumero(c[k].valor);
-        });
-        Object.values(c.mercadosGlobales || {}).forEach(v => { alimentos += aNumero(v); });
-        const diarios = (h.gastosDiarios || []).reduce((a, g) => a + aNumero(g.valor), 0);
-        const fuera = (h.comidasFuera || []).reduce((a, g) => a + aNumero(g.valor), 0);
-        return { alimentos, diarios, fuera, total: alimentos + diarios + fuera };
-    }
-
-    const fmtCOP = (n) => '$' + Math.round(n).toLocaleString('es-CO');
-
-    function renderSeccionReportes() {
-        const tbody = document.getElementById('tabla-reporte-body');
-        if (!tbody) return;
-
-        const filtroEstado = document.getElementById('filtro-reporte-estado')?.value || 'todos';
-
-        let lista = hogaresBD;
-        if (filtroEstado !== 'todos') {
-            lista = hogaresBD.filter(h => h.estado === filtroEstado);
-        }
-
-        // Métricas rápidas
-        const totalHogares = hogaresBD.length;
-        const completados = hogaresBD.filter(h => h.estado === 'completado').length;
-        const avancePct = totalHogares ? Math.round((completados / totalHogares) * 100) : 0;
-        const totalVisitas = hogaresBD.reduce((acc, h) => acc + (h.visitas ? h.visitas.length : 0), 0);
-        const totalGastos = hogaresBD.reduce((acc, h) => acc + (h.gastosDiarios ? h.gastosDiarios.length : 0), 0);
-
-        document.getElementById('rep-met-totales').innerText = totalHogares;
-        document.getElementById('rep-met-avance').innerText = `${avancePct}%`;
-        document.getElementById('rep-met-visitas').innerText = totalVisitas;
-        document.getElementById('rep-met-gastos').innerText = totalGastos;
-
-        tbody.innerHTML = '';
-
-        if (lista.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="padding: 1rem; color: #888; text-align: center;">No hay registros para mostrar.</td></tr>`;
-            return;
-        }
-
-        lista.forEach(h => {
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #f3f4f6';
-
-            let badgeBg = '#fef3c7', badgeColor = '#d97706';
-            if (h.estado === 'completado') { badgeBg = '#d1fae5'; badgeColor = '#059669'; }
-            if (h.estado === 'pendiente') { badgeBg = '#dbeafe'; badgeColor = '#2563eb'; }
-
-            const numVisitas = h.visitas ? h.visitas.length : 0;
-            const numGastos = h.gastosDiarios ? h.gastosDiarios.length : 0;
-
-            tr.innerHTML = `
-                <td style="padding: 0.8rem 1rem; font-weight: 700; color: #374151;">${h.codigo}</td>
-                <td style="padding: 0.8rem 1rem; font-weight: 600; color: #111827;">${h.jefe}</td>
-                <td style="padding: 0.8rem 1rem; color: #6b7280;">${h.direccion}</td>
-                <td style="padding: 0.8rem 1rem;">
-                    <span style="background-color: ${badgeBg}; color: ${badgeColor}; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.72rem; font-weight: 700;">
-                        ${h.etiqueta}
-                    </span>
-                </td>
-                <td style="padding: 0.8rem 1rem; text-align: center; font-weight: 700; color: #1f2937;">${h.progreso}%</td>
-                <td style="padding: 0.8rem 1rem; text-align: center; color: #4b5563;">${numVisitas}</td>
-                <td style="padding: 0.8rem 1rem; text-align: center; color: #4b5563;">${numGastos}</td>
-                <td style="padding: 0.8rem 1rem; text-align: right; font-weight: 700; color: #1f2937;">${fmtCOP(totalesHogar(h).total)}</td>
-            `;
-
-            tbody.appendChild(tr);
-        });
-    }
-
-    // Exportar datos del reporte a CSV
-    function exportarReporteCSV() {
-        if (!hogaresBD || hogaresBD.length === 0) {
-            alert('No hay datos disponibles para exportar.');
-            return;
-        }
-
-        const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-        const filas = ["Codigo,Jefe de Hogar,Direccion,Estado,Progreso,Visitas Registradas,Gastos Registrados,Total Gastado (COP)"];
-
-        hogaresBD.forEach(h => {
-            const t = totalesHogar(h);
-            filas.push([
-                esc(h.codigo), esc(h.jefe), esc(h.direccion), esc(h.etiqueta),
-                esc(`${h.progreso}%`),
-                esc(h.visitas ? h.visitas.length : 0),
-                esc(h.gastosDiarios ? h.gastosDiarios.length : 0),
-                esc(t.total)
-            ].join(","));
-        });
-
-        // BOM (\uFEFF) para que Excel respete tildes; Blob para que '#' no corte el archivo
-        const blob = new Blob(["\uFEFF" + filas.join("\n")], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `Reporte_Hogares_DANE_${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-
-    const btnExportar = document.getElementById('btn-exportar-csv');
-    if (btnExportar) {
-        btnExportar.addEventListener('click', exportarReporteCSV);
-    }
-
-    const filtroReporte = document.getElementById('filtro-reporte-estado');
-    if (filtroReporte) {
-        filtroReporte.addEventListener('change', renderSeccionReportes);
-    }
-
     // Renderizado dinámico de la Tabla C
     function renderTablaCapituloC() {
         const tbody = document.getElementById('tabla-capitulo-c-body');
@@ -1148,6 +1028,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             tbody.appendChild(tr);
         });
 
+        // Mercados Globales
         const contMercados = document.getElementById('contenedor-mercados-globales');
         if (contMercados) {
             contMercados.innerHTML = '';
@@ -1175,6 +1056,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         if (obsArea) obsArea.value = datosCapC.observaciones || '';
     }
 
+    // Renderizar Visitas
     function renderTablaVisitas(visitas) {
         const tbody = document.getElementById('tabla-visitas-body');
         if (!tbody) return;
@@ -1211,6 +1093,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Selector de días 1 a 14
     function renderSelectorDias() {
         const cont = document.getElementById('selector-dias');
         if (!cont || !hogarSeleccionadoActual) return;
@@ -1247,6 +1130,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         }
     }
 
+    // Crea un botón Eliminar para una fila
     function crearBotonEliminar(onConfirmar) {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -1256,6 +1140,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         return btn;
     }
 
+    // Estilos de las celdas editables (se agregan una sola vez)
     function asegurarEstilosEditables() {
         if (document.getElementById('estilos-celdas-editables')) return;
         const st = document.createElement('style');
@@ -1279,6 +1164,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         document.head.appendChild(st);
     }
 
+    // Lista de sugerencias para la categoría (se puede escribir otra distinta)
     function asegurarListaCategorias() {
         if (document.getElementById('lista-categorias-d')) return;
         const dl = document.createElement('datalist');
@@ -1292,6 +1178,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         document.body.appendChild(dl);
     }
 
+    // Input editable: guarda al cambiar. onCambio devuelve false si el valor es inválido
     function crearCeldaInput(tipo, valorActual, onCambio, listaId) {
         const inp = document.createElement('input');
         inp.type = tipo;
@@ -1310,6 +1197,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         return inp;
     }
 
+    // Renderizar Gastos Diarios D (solo del día seleccionado) - celdas editables
     function renderTablaGastosD() {
         const tbody = document.getElementById('tabla-gastos-d-body');
         if (!tbody || !hogarSeleccionadoActual) return;
@@ -1339,7 +1227,9 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             }
 
             celdas[0].appendChild(crearCeldaInput('date', g.fecha, (v) => { g.fecha = v; }));
+
             celdas[1].appendChild(crearCeldaInput('text', g.categoria || '', (v) => { g.categoria = v.trim(); }, 'lista-categorias-d'));
+
             celdas[2].appendChild(crearCeldaInput('text', g.concepto, (v, inp) => {
                 if (!v.trim()) {
                     alert('La descripción no puede quedar vacía.');
@@ -1348,6 +1238,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                 }
                 g.concepto = v.trim();
             }));
+
             celdas[3].appendChild(crearCeldaInput('number', g.valor, (v, inp) => {
                 if (v === '' || Number(v) < 0) {
                     alert('Ingrese un valor válido.');
@@ -1370,6 +1261,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Renderizar Comidas Fuera D1 (solo del día seleccionado) - celdas editables
     function renderTablaComidasD1() {
         const tbody = document.getElementById('tabla-comidas-d1-body');
         if (!tbody || !hogarSeleccionadoActual) return;
@@ -1399,6 +1291,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                 tr.appendChild(td);
             }
 
+            // Tipo de comida (desplegable editable)
             const sel = document.createElement('select');
             sel.className = 'celda-editable';
             const opciones = tipos.includes(c.tipo) ? tipos : [c.tipo, ...tipos];
@@ -1448,6 +1341,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Dibuja toda la pestaña D para el día seleccionado
     function renderDiaD() {
         if (!hogarSeleccionadoActual) return;
 
@@ -1472,8 +1366,9 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         renderTablaComidasD1();
     }
 
+    // Cargar datos del hogar activo
     function cargarDetalleHogar(hogar) {
-        flushGuardados();
+        flushGuardados(); // guarda lo pendiente del hogar anterior antes de cambiar
         hogarSeleccionadoActual = hogar;
 
         document.querySelectorAll('.det-header-codigo').forEach(el => el.innerText = `HOGAR ACTIVO - ${hogar.codigo}`);
@@ -1507,11 +1402,13 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         restaurarBorradores();
     }
 
+    // Ir a una pestaña por su href
     function irAPestana(href) {
         const tab = document.querySelector(`.top-navigation a[href="${href}"]`);
         if (tab) tab.click();
     }
 
+    // RENDERIZADO EN LISTA VERTICAL (toda la tarjeta es clicable)
     function renderHogares(lista) {
         const container = document.getElementById('hogares-container');
         if (!container) return;
@@ -1544,6 +1441,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
                 <span class="badge-status ${badgeClass}">${hogar.etiqueta}</span>
             `;
 
+            // Un solo clic en cualquier parte de la tarjeta abre el hogar
             card.addEventListener('click', () => {
                 hogarAbierto = true;
                 cargarDetalleHogar(hogar);
@@ -1556,69 +1454,11 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         actualizarContadoresMetricas();
     }
 
-    // ===== Filtros de la lista de hogares (tarjetas de métricas, pestañas y búsqueda) =====
-    let filtroEstadoActual = 'todos';
-    let textoBusquedaActual = '';
-
-    function aplicarFiltrosHogares() {
-        const texto = textoBusquedaActual.trim().toLowerCase();
-
-        const lista = hogaresBD.filter(h => {
-            const coincideEstado = filtroEstadoActual === 'todos' || h.estado === filtroEstadoActual;
-            const coincideTexto = !texto ||
-                String(h.codigo || '').toLowerCase().includes(texto) ||
-                String(h.jefe || '').toLowerCase().includes(texto) ||
-                String(h.direccion || '').toLowerCase().includes(texto);
-            return coincideEstado && coincideTexto;
-        });
-
-        renderHogares(lista);
-
-        document.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === filtroEstadoActual);
-        });
-        document.querySelectorAll('.metric-card[data-metric]').forEach(card => {
-            card.classList.toggle('metric-active', card.dataset.metric === filtroEstadoActual);
-        });
-    }
-
-    // Clic en las tarjetas de arriba (asignados, completados, en proceso, pendientes)
-    document.querySelectorAll('.metric-card[data-metric]').forEach(card => {
-        card.addEventListener('click', () => {
-            filtroEstadoActual = card.dataset.metric;
-            aplicarFiltrosHogares();
-            const seccion = document.querySelector('.hogares-section');
-            if (seccion) seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    });
-
-    // Pestañas: Todos / Pendientes / En proceso / Completados
-    document.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            filtroEstadoActual = btn.dataset.filter;
-            aplicarFiltrosHogares();
-        });
-    });
-
-    // Buscador
-    const inputBusqueda = document.getElementById('search-hogar');
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', () => {
-            textoBusquedaActual = inputBusqueda.value;
-            aplicarFiltrosHogares();
-        });
-    }
-
-    // Botón Actualizar
-    const btnActualizarLista = document.getElementById('btn-actualizar');
-    if (btnActualizarLista) {
-        btnActualizarLista.addEventListener('click', aplicarFiltrosHogares);
-    }
-
+    // Inicializar: solo se dibuja la lista; NO se abre ningún hogar
     renderHogares(hogaresBD);
     renderTablaVisitas([]);
 
-    // Navegación entre pestañas
+    // Navegación entre pestañas superiores
     const navLinks = document.querySelectorAll('.top-navigation .nav-link');
     const sections = document.querySelectorAll('.tab-section');
 
@@ -1628,6 +1468,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
             const destino = link.getAttribute('href');
 
+            // Bloquear pestañas de captura mientras no se haya abierto un hogar
             if (!hogarAbierto && destino !== '#inicio' && destino !== '#consultas' && destino !== '#reportes') {
                 alert('Primero seleccione un hogar en Inicio.');
                 return;
@@ -1647,20 +1488,15 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
             if (targetSection) {
                 targetSection.style.display = 'block';
             }
-
-            if (destino === '#reportes') {
-                renderSeccionReportes();
-            }
-            if (destino === '#consultas') {
-                flushGuardados();
-                actualizarContadoresMetricas();
-            }
+            if (destino === '#consultas') { flushGuardados(); renderConsultas(); }
+            if (destino === '#reportes') { flushGuardados(); renderReportes(); }
         });
     });
 
     const activeLink = document.querySelector('.top-navigation .nav-link.active');
     if (activeLink) activeLink.style.backgroundColor = '#1b4332';
 
+    // Botones "Cambiar hogar": cierran el hogar actual y vuelven a Inicio
     document.querySelectorAll('.btn-cambiar-hogar').forEach(btn => {
         btn.addEventListener('click', () => {
             flushGuardados();
@@ -1670,23 +1506,13 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     });
 
-    const btnPerfil = document.getElementById('btn-user-profile');
-    if (btnPerfil) {
-        btnPerfil.style.cursor = 'pointer';
-        btnPerfil.addEventListener('click', () => {
-            if (!confirm('¿Desea cerrar la sesión?')) return;
-            flushGuardados();
-            sessionStorage.removeItem('currentUser');
-            sessionStorage.removeItem('userRole');
-            location.reload();
-        });
-    }
-
+    // Actualiza solo el progreso del encabezado (sin recargar toda la pantalla)
     function actualizarEncabezados(hogar) {
         document.querySelectorAll('.det-header-progreso-val').forEach(el => el.innerText = `${hogar.progreso}%`);
         document.querySelectorAll('.det-header-progreso-bar').forEach(el => el.style.width = `${hogar.progreso}%`);
     }
 
+    // Guarda los datos de Identificación del hogar activo
     function guardarIdentificacion() {
         if (!hogarSeleccionadoActual) return;
 
@@ -1705,9 +1531,11 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         }
 
         guardarHogaresBD();
+        aplicarFiltros();
         actualizarEncabezados(hogarSeleccionadoActual);
     }
 
+    // Autoguardado de Identificación: al escribir o cambiar cualquier campo
     ['det-input-orden', 'det-select-resultado', 'det-select-estado'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -1715,6 +1543,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         el.addEventListener('change', guardarIdentificacion);
     });
 
+    // El botón sigue existiendo, pero ya no es necesario para no perder datos
     const btnGuardarCambios = document.getElementById('btn-guardar-cambios');
     if (btnGuardarCambios) {
         btnGuardarCambios.addEventListener('click', () => {
@@ -1724,11 +1553,13 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Continuar desde Identificación
     const btnContIdent = document.getElementById('btn-continuar-ident');
     if (btnContIdent) {
         btnContIdent.addEventListener('click', () => irAPestana('#control-visitas'));
     }
 
+    // Registrar nueva visita
     const btnRegVisita = document.getElementById('btn-registrar-visita');
     if (btnRegVisita) {
         btnRegVisita.addEventListener('click', () => {
@@ -1769,11 +1600,13 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Continuar a Gasto en Alimentos
     const btnContVisita = document.getElementById('btn-continuar-visita');
     if (btnContVisita) {
         btnContVisita.addEventListener('click', () => irAPestana('#gasto-alimentos'));
     }
 
+    // Recolecta y guarda el Capítulo C del hogar activo
     function guardarCapituloC() {
         if (!hogarSeleccionadoActual || !hogarAbierto) return false;
         const obs = document.getElementById('obs-capitulo-c');
@@ -1806,6 +1639,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         return true;
     }
 
+    // Autoguardado del Capítulo C: se guarda 0,4 s después de cada cambio
     let temporizadorCapC = null;
 
     function programarGuardadoCapC() {
@@ -1816,6 +1650,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         }, 400);
     }
 
+    // Guarda de inmediato lo que esté pendiente (al cambiar de hogar o cerrar la página)
     function flushGuardados() {
         if (temporizadorCapC) {
             clearTimeout(temporizadorCapC);
@@ -1835,6 +1670,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         if (document.visibilityState === 'hidden') flushGuardados();
     });
 
+    // El botón sigue existiendo, pero ya no es necesario para no perder datos
     const btnGuardarAlimentos = document.getElementById('btn-guardar-alimentos');
     if (btnGuardarAlimentos) {
         btnGuardarAlimentos.addEventListener('click', () => {
@@ -1846,11 +1682,13 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Continuar a Gastos Diarios
     const btnContAlimentos = document.getElementById('btn-continuar-alimentos');
     if (btnContAlimentos) {
         btnContAlimentos.addEventListener('click', () => irAPestana('#gastos-diarios'));
     }
 
+    // Mostrar/ocultar el campo de texto cuando la categoría es "Otro"
     const selCategoria = document.getElementById('gasto-d-categoria');
     const contCategoriaOtro = document.getElementById('contenedor-categoria-otro');
     if (selCategoria && contCategoriaOtro) {
@@ -1863,6 +1701,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Agregar Gasto Diario (D) al día seleccionado
     const btnAgregarGastoD = document.getElementById('btn-agregar-gasto-d');
     if (btnAgregarGastoD) {
         btnAgregarGastoD.addEventListener('click', () => {
@@ -1899,6 +1738,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Suma un día a una fecha en formato AAAA-MM-DD
     function sumarUnDia(fechaISO) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaISO || '')) return fechaISO || '';
         const f = new Date(fechaISO + 'T00:00:00');
@@ -1909,6 +1749,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         return `${y}-${m}-${dd}`;
     }
 
+    // Traer del día anterior: copia los gastos del día anterior al día actual
     const btnTraerAyer = document.getElementById('btn-traer-ayer');
     if (btnTraerAyer) {
         btnTraerAyer.addEventListener('click', () => {
@@ -1945,6 +1786,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Pregunta: ¿consumió alimentos preparados fuera del hogar?
     document.querySelectorAll('input[name="comio-fuera"]').forEach(radio => {
         radio.addEventListener('change', () => {
             if (!hogarSeleccionadoActual) return;
@@ -1954,6 +1796,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
 
             const delDia = hogarSeleccionadoActual.comidasFuera.filter(c => Number(c.dia || 1) === diaActual);
 
+            // Si cambia a "No" y ya había comidas registradas ese día, se confirma antes de borrarlas
             if (radio.value === 'no' && delDia.length > 0) {
                 if (!confirm(`Hay ${delDia.length} comida(s) fuera registradas en el día ${diaActual}. Si responde "No" se eliminarán. ¿Continuar?`)) {
                     renderDiaD();
@@ -1968,6 +1811,7 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     });
 
+    // Agregar Comida Fuera (D1) al día seleccionado
     const btnAgregarComidaD1 = document.getElementById('btn-agregar-comida-d1');
     if (btnAgregarComidaD1) {
         btnAgregarComidaD1.addEventListener('click', () => {
@@ -1994,28 +1838,239 @@ function cargarDashboardInicioSuperior(nombreUsuario) {
         });
     }
 
+    // Navegación entre días
     const btnDiaAnterior = document.getElementById('btn-dia-anterior');
     if (btnDiaAnterior) {
         btnDiaAnterior.addEventListener('click', () => {
-            if (diaActual > 1) {
-                diaActual--;
-                renderDiaD();
-            }
+            if (diaActual > 1) { diaActual--; renderDiaD(); }
         });
     }
 
     const btnDiaSiguiente = document.getElementById('btn-dia-siguiente');
     if (btnDiaSiguiente) {
         btnDiaSiguiente.addEventListener('click', () => {
-            if (diaActual < 14) {
-                diaActual++;
-                renderDiaD();
+            if (diaActual < 14) { diaActual++; renderDiaD(); }
+            else alert('Ya está en el día 14, el último día de recolección.');
+        });
+    }
+
+    // Ir a Consultas
+    const btnContGastos = document.getElementById('btn-continuar-gastos');
+    if (btnContGastos) {
+        btnContGastos.addEventListener('click', () => irAPestana('#consultas'));
+    }
+
+    // ==========================================
+    // CONSULTAS Y REPORTES
+    // ==========================================
+    const fmtMoneda = n => '$' + Number(n || 0).toLocaleString('es-CO');
+    const sumar = (lista) => lista.reduce((a, x) => a + Number(x.valor || 0), 0);
+
+    function resumenHogar(h) {
+        const gastos = h.gastosDiarios || [];
+        const comidas = h.comidasFuera || [];
+        const capC = h.capituloC || {};
+        const totalD = sumar(gastos);
+        const totalD1 = sumar(comidas);
+        return {
+            A: h.estado !== 'pendiente',
+            visitas: (h.visitas || []).length,
+            itemsC: alimentosCapituloC.filter(a => capC[a.id] && capC[a.id].frecuencia).length,
+            diasD: new Set(gastos.map(g => Number(g.dia || 1))).size,
+            nGastos: gastos.length,
+            nComidas: comidas.length,
+            totalD, totalD1, total: totalD + totalD1
+        };
+    }
+
+    function detalleHogarHTML(h) {
+        const capC = h.capituloC || {};
+        const bloque = (titulo, arr) => `<div style="margin-bottom: 0.8rem;"><strong>${titulo}</strong><br>${arr.length ? arr.join('<br>') : '<span style="color:#888;">Sin información</span>'}</div>`;
+        const visitas = (h.visitas || []).map(v => `#${v.num} · ${v.fecha} · ${v.inicio}-${v.fin} · ${v.resultado}`);
+        const filasC = alimentosCapituloC.filter(a => capC[a.id] && capC[a.id].frecuencia)
+            .map(a => `${a.id}. ${a.nombre.split(':')[0]} — frecuencia ${capC[a.id].frecuencia}${capC[a.id].valor ? ' · ' + fmtMoneda(capC[a.id].valor) : ''}`);
+        const porDia = [];
+        for (let d = 1; d <= 14; d++) {
+            const g = (h.gastosDiarios || []).filter(x => Number(x.dia || 1) === d).map(x => `${x.concepto}${x.categoria ? ' (' + x.categoria + ')' : ''} ${fmtMoneda(x.valor)}`);
+            const c = (h.comidasFuera || []).filter(x => Number(x.dia || 1) === d).map(x => `${x.tipo} en ${x.lugar} ${fmtMoneda(x.valor)}`);
+            if (g.length || c.length) porDia.push(`<em>Día ${d}:</em> ${g.concat(c.map(t => '🍽 ' + t)).join('; ')}`);
+        }
+        return bloque('B · Visitas', visitas) + bloque('C · Alimentos diligenciados', filasC) + bloque('D / D1 · Gastos por día', porDia);
+    }
+
+    function renderConsultas() {
+        const tbody = document.getElementById('tabla-consultas-body');
+        if (!tbody) return;
+        actualizarContadoresMetricas();
+        const filtro = document.getElementById('filtro-consultas').value;
+        const ok = v => v ? '<span style="color:#137333;font-weight:700;">✓</span>' : '<span style="color:#aaa;">–</span>';
+        const td = 'style="padding: 0.7rem;"';
+        tbody.innerHTML = '';
+
+        hogaresBD.forEach(h => {
+            const r = resumenHogar(h);
+            if (filtro === 'sinC' && r.itemsC > 0) return;
+            if (filtro === 'sinD' && r.nGastos > 0) return;
+
+            const tr = document.createElement('tr');
+            tr.style.cssText = 'border-bottom: 1px solid #eee; cursor: pointer;';
+            tr.innerHTML = `<td ${td}><strong>${h.codigo}</strong></td><td ${td}>${h.jefe}</td><td ${td}>${ok(r.A)}</td>
+                <td ${td}>${ok(r.visitas > 0)} ${r.visitas}</td><td ${td}>${ok(r.itemsC > 0)} ${r.itemsC}/25</td>
+                <td ${td}>${ok(r.diasD > 0)} ${r.diasD}/14 días</td><td ${td}>${ok(r.nComidas > 0)} ${r.nComidas}</td>
+                <td ${td}><strong>${fmtMoneda(r.total)}</strong></td><td ${td}>▾ Ver</td>`;
+            const det = document.createElement('tr');
+            det.style.display = 'none';
+            det.innerHTML = `<td colspan="9" style="padding: 1rem 1.5rem; background: #f8f9fa; font-size: 0.82rem;">${detalleHogarHTML(h)}</td>`;
+            tr.addEventListener('click', () => { det.style.display = (det.style.display === 'none') ? 'table-row' : 'none'; });
+            tbody.append(tr, det);
+        });
+
+        if (!tbody.children.length) tbody.innerHTML = '<tr><td colspan="9" style="padding: 1rem; color: #888; text-align: center;">Ningún hogar coincide con el filtro.</td></tr>';
+    }
+
+    function renderReportes() {
+        const tbody = document.getElementById('tabla-reporte-body');
+        if (!tbody) return;
+        const td = 'style="padding: 0.7rem;"';
+        let tD = 0, tD1 = 0, tV = 0;
+        tbody.innerHTML = '';
+
+        hogaresBD.forEach(h => {
+            const r = resumenHogar(h);
+            tD += r.totalD; tD1 += r.totalD1; tV += r.visitas;
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #eee';
+            tr.innerHTML = `<td ${td}>${h.codigo}</td><td ${td}>${h.jefe}</td><td ${td}>${h.etiqueta}</td><td ${td}>${r.visitas}</td>
+                <td ${td}>${r.diasD}/14</td><td ${td}>${fmtMoneda(r.totalD)}</td><td ${td}>${fmtMoneda(r.totalD1)}</td><td ${td}><strong>${fmtMoneda(r.total)}</strong></td>`;
+            tbody.appendChild(tr);
+        });
+
+        const tot = document.createElement('tr');
+        tot.style.cssText = 'background: #f1f3f5; font-weight: 700;';
+        tot.innerHTML = `<td ${td} colspan="3">TOTAL (${hogaresBD.length} hogares)</td><td ${td}>${tV}</td><td ${td}></td><td ${td}>${fmtMoneda(tD)}</td><td ${td}>${fmtMoneda(tD1)}</td><td ${td}>${fmtMoneda(tD + tD1)}</td>`;
+        tbody.appendChild(tot);
+
+        const f = document.getElementById('reporte-fecha');
+        if (f) f.innerText = `Generado el ${new Date().toLocaleString('es-CO')} · Usuario: ${nombreUsuario}`;
+    }
+
+    function descargarCSV(nombre, filas) {
+        const csv = filas.map(f => f.map(c => `"${String(c === undefined || c === null ? '' : c).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nombre;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function exportarReporte(tipo) {
+        flushGuardados();
+        const filas = [];
+        hogaresBD.forEach(h => {
+            const base = [h.codigo, h.jefe];
+            const capC = h.capituloC || {};
+            if (tipo === 'consolidado') {
+                const r = resumenHogar(h);
+                filas.push([...base, h.direccion, h.etiqueta, r.visitas, r.itemsC, r.diasD, r.totalD, r.nComidas, r.totalD1, r.total]);
+            } else if (tipo === 'visitas') {
+                (h.visitas || []).forEach(v => filas.push([...base, v.num, v.fecha, v.inicio, v.fin, v.resultado, v.observacion]));
+            } else if (tipo === 'capc') {
+                alimentosCapituloC.forEach(a => {
+                    const d = capC[a.id];
+                    if (d && d.frecuencia) filas.push([...base, a.id, a.nombre, d.frecuencia, d.valor, d.comprara === '1' ? 'Sí' : (d.comprara === '2' ? 'No' : '')]);
+                });
+            } else if (tipo === 'gastos') {
+                (h.gastosDiarios || []).forEach(g => filas.push([...base, g.dia || 1, g.fecha, g.categoria || '', g.concepto, g.valor]));
+            } else if (tipo === 'comidas') {
+                (h.comidasFuera || []).forEach(c => filas.push([...base, c.dia || 1, c.tipo, c.lugar, c.valor]));
+            }
+        });
+
+        const encabezados = {
+            consolidado: ['Código', 'Jefe de hogar', 'Dirección', 'Estado', 'Visitas', 'Grupos C diligenciados', 'Días con gastos', 'Total D', 'N° comidas fuera', 'Total comidas fuera', 'Total general'],
+            visitas: ['Código', 'Jefe de hogar', 'N° visita', 'Fecha', 'Inicio', 'Fin', 'Resultado', 'Observación'],
+            capc: ['Código', 'Jefe de hogar', 'Item', 'Grupo de alimentos', 'Frecuencia', 'Valor última compra', '¿Comprará próx. 14 días?'],
+            gastos: ['Código', 'Jefe de hogar', 'Día', 'Fecha', 'Categoría', 'Descripción', 'Valor'],
+            comidas: ['Código', 'Jefe de hogar', 'Día', 'Tipo de comida', 'Establecimiento', 'Valor']
+        };
+        if (filas.length === 0) {
+            alert('Aún no hay información para este reporte.');
+            return;
+        }
+        descargarCSV(`reporte_${tipo}_${new Date().toISOString().slice(0, 10)}.csv`, [encabezados[tipo], ...filas]);
+    }
+
+    document.querySelectorAll('[data-reporte]').forEach(b => b.addEventListener('click', () => exportarReporte(b.dataset.reporte)));
+    const btnImprimir = document.getElementById('btn-imprimir-reporte');
+    if (btnImprimir) btnImprimir.addEventListener('click', () => { renderReportes(); window.print(); });
+    const filtroConsultas = document.getElementById('filtro-consultas');
+    if (filtroConsultas) filtroConsultas.addEventListener('change', renderConsultas);
+
+    // Filtros y Buscador
+    const filterBtns = document.querySelectorAll('.filter-tabs .tab-btn');
+    const searchInput = document.getElementById('search-hogar');
+    let estadoFiltroActual = 'todos';
+
+    function aplicarFiltros() {
+        const texto = searchInput ? searchInput.value.toLowerCase() : '';
+        const filtrados = hogaresBD.filter(hogar => {
+            const coincideTexto = hogar.codigo.toLowerCase().includes(texto) ||
+                                  hogar.jefe.toLowerCase().includes(texto) ||
+                                  hogar.direccion.toLowerCase().includes(texto);
+
+            const coincideEstado = (estadoFiltroActual === 'todos') || (hogar.estado === estadoFiltroActual);
+            return coincideTexto && coincideEstado;
+        });
+
+        renderHogares(filtrados);
+    }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            estadoFiltroActual = this.getAttribute('data-filter');
+            aplicarFiltros();
+        });
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener('input', aplicarFiltros);
+    }
+
+    // Métricas interactivas
+    const metricCards = document.querySelectorAll('.metric-card');
+    metricCards.forEach(card => {
+        card.addEventListener('click', function () {
+            const filtroMetrica = this.getAttribute('data-metric');
+            const botonFiltroDestino = document.querySelector(`.filter-tabs .tab-btn[data-filter="${filtroMetrica}"]`);
+            if (botonFiltroDestino) {
+                botonFiltroDestino.click();
+            }
+        });
+    });
+
+    // Cerrar sesión
+    const btnUserProfile = document.getElementById('btn-user-profile');
+    if (btnUserProfile) {
+        btnUserProfile.addEventListener('click', () => {
+            if (confirm('¿Desea cerrar la sesión activa?')) {
+                flushGuardados();
+                sessionStorage.removeItem('currentUser');
+                sessionStorage.removeItem('userRole');
+                location.reload();
             }
         });
     }
 
-    const btnContinuarGastos = document.getElementById('btn-continuar-gastos');
-    if (btnContinuarGastos) {
-        btnContinuarGastos.addEventListener('click', () => irAPestana('#consultas'));
+    // Actualizar datos
+    const btnActualizar = document.getElementById('btn-actualizar');
+    if (btnActualizar) {
+        btnActualizar.addEventListener('click', () => {
+            aplicarFiltros();
+            alert('🔄 Información de hogares sincronizada localmente.');
+        });
     }
 }
