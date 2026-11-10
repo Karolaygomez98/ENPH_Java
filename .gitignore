@@ -1,0 +1,6 @@
+config.properties
+*.class
+build/
+dist/
+nbproject/private/
+*.log
