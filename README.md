@@ -9,8 +9,6 @@ Aplicacion de escritorio en Java 17 (Swing) con base de datos Oracle 10g para re
 - Diego Andres Fuentes Lizcano
 - Edwin Andres Arias Pineda
 
-Docente: Jorge Giovany Castellanos Valderrama.
-
 ## Arquitectura
 Arquitectura en capas con patron DAO. Solo `conexion.ConexionBD` abre conexiones a Oracle.
 
